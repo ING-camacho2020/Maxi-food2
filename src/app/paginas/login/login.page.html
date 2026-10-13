@@ -1,35 +1,208 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Maxi-Food</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="login-bg">
+  <div class="login-wrapper">
+    <!-- Hero Banner Superior -->
+    <div class="brand-header">
+      <div class="logo-badge">
+        <ion-icon name="paw-outline"></ion-icon>
+      </div>
+      <h1>Maxi-Food</h1>
+      <p>Nutrición súper premium y amor para tu mejor amigo 🐾</p>
 
-<ion-content class="ion-padding" [fullscreen]="true">
-  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh;">
-    <ion-card style="width: 100%; max-width: 420px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);">
-      <ion-card-header class="ion-text-center">
-        <ion-card-title color="primary" style="font-weight: bold; font-size: 1.6rem;">Maxi-Food</ion-card-title>
-        <ion-card-subtitle>Nutrición ideal para tu mascota</ion-card-subtitle>
-      </ion-card-header>
+      <div class="trust-badges">
+        <ion-chip class="badge-pill">
+          <ion-icon name="rocket-outline"></ion-icon>
+          <ion-label>Envío Rápido</ion-label>
+        </ion-chip>
+        <ion-chip class="badge-pill">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <ion-label>Calidad 100% Natural</ion-label>
+        </ion-chip>
+      </div>
+    </div>
 
+    <!-- Tarjeta Principal -->
+    <ion-card class="auth-card">
       <ion-card-content>
-        <ion-item lines="full" class="ion-margin-bottom">
-          <ion-icon name="mail-outline" slot="start" color="medium"></ion-icon>
-          <ion-input label="Correo electrónico" labelPlacement="floating" type="email" [(ngModel)]="correo" placeholder="correo@ejemplo.com"></ion-input>
-        </ion-item>
+        <!-- Selector Iniciar Sesión / Registrarse -->
+        <ion-segment [value]="modo" (ionChange)="cambiarModo($event)" class="auth-segment">
+          <ion-segment-button value="login">
+            <ion-label>Iniciar Sesión</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="registro">
+            <ion-label>Crear Cuenta</ion-label>
+          </ion-segment-button>
+        </ion-segment>
 
-        <ion-item lines="full" class="ion-margin-bottom">
-          <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
-          <ion-input label="Contraseña" labelPlacement="floating" type="password" [(ngModel)]="password" placeholder="••••••••"></ion-input>
-        </ion-item>
+        <!-- MODO LOGIN -->
+        <div *ngIf="modo === 'login'" class="form-section">
+          <div class="welcome-text">
+            <h2>¡Hola de nuevo! 👋</h2>
+            <p>Ingresa tus datos para consentir a tu mascota</p>
+          </div>
 
-        <ion-button expand="block" shape="round" color="primary" class="ion-margin-top" (click)="iniciarSesion()">
-          Ingresar
-        </ion-button>
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Correo electrónico"
+              labelPlacement="floating"
+              type="email"
+              [(ngModel)]="correo"
+              placeholder="correo@ejemplo.com"
+            ></ion-input>
+          </ion-item>
 
-        <ion-button fill="clear" expand="block" size="small" class="ion-margin-top" color="medium">
-          ¿No tienes cuenta? Regístrate
-        </ion-button>
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Contraseña"
+              labelPlacement="floating"
+              [type]="mostrarPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              placeholder="••••••••"
+              (keyup.enter)="iniciarSesion()"
+            ></ion-input>
+            <ion-button
+              fill="clear"
+              slot="end"
+              color="medium"
+              (click)="mostrarPassword = !mostrarPassword"
+            >
+              <ion-icon [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <ion-button expand="block" shape="round" class="primary-btn" (click)="iniciarSesion()">
+            Ingresar a la Tienda
+          </ion-button>
+
+          <div class="divider">
+            <span>o prueba al instante</span>
+          </div>
+
+          <ion-button
+            expand="block"
+            shape="round"
+            fill="outline"
+            color="secondary"
+            class="demo-btn"
+            (click)="accesoDemo()"
+          >
+            <ion-icon name="sparkles-outline" slot="start"></ion-icon>
+            Entrar con Cuenta Demo (1 clic)
+          </ion-button>
+
+          <p class="switch-prompt">
+            ¿No tienes cuenta todavía?
+            <a (click)="modo = 'registro'">Regístrate gratis</a>
+          </p>
+        </div>
+
+        <!-- MODO REGISTRO -->
+        <div *ngIf="modo === 'registro'" class="form-section">
+          <div class="welcome-text">
+            <h2>Únete a la manada 🐶🐱</h2>
+            <p>Crea tu perfil y recibe un cupón del 10% (<strong>MAXI10</strong>)</p>
+          </div>
+
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Tu nombre completo"
+              labelPlacement="floating"
+              type="text"
+              [(ngModel)]="nombre"
+              placeholder="Ej. Carlos Camacho"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Correo electrónico"
+              labelPlacement="floating"
+              type="email"
+              [(ngModel)]="correo"
+              placeholder="correo@ejemplo.com"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Crea una contraseña"
+              labelPlacement="floating"
+              [type]="mostrarPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              placeholder="Mínimo 4 caracteres"
+            ></ion-input>
+            <ion-button
+              fill="clear"
+              slot="end"
+              color="medium"
+              (click)="mostrarPassword = !mostrarPassword"
+            >
+              <ion-icon [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="heart-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Nombre de tu mascota"
+              labelPlacement="floating"
+              type="text"
+              [(ngModel)]="nombreMascota"
+              placeholder="Ej. Max, Luna, Michi..."
+            ></ion-input>
+          </ion-item>
+
+          <div class="pet-type-selector">
+            <span class="pet-label">¿Qué mascota tienes?</span>
+            <div class="pet-pills">
+              <button
+                type="button"
+                [class.active]="tipoMascota === 'perro'"
+                (click)="tipoMascota = 'perro'"
+              >
+                🐕 Perro
+              </button>
+              <button
+                type="button"
+                [class.active]="tipoMascota === 'gato'"
+                (click)="tipoMascota = 'gato'"
+              >
+                🐈 Gato
+              </button>
+              <button
+                type="button"
+                [class.active]="tipoMascota === 'ambos'"
+                (click)="tipoMascota = 'ambos'"
+              >
+                🐾 Ambos
+              </button>
+            </div>
+          </div>
+
+          <ion-item lines="none" class="custom-input">
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-input
+              label="Dirección de entrega (opcional)"
+              labelPlacement="floating"
+              type="text"
+              [(ngModel)]="direccion"
+              placeholder="Ej. Calle 85 # 12-40"
+            ></ion-input>
+          </ion-item>
+
+          <ion-button expand="block" shape="round" class="primary-btn" (click)="registrarCuenta()">
+            Crear Cuenta y Explorar
+          </ion-button>
+
+          <p class="switch-prompt">
+            ¿Ya tienes una cuenta?
+            <a (click)="modo = 'login'">Inicia sesión aquí</a>
+          </p>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>

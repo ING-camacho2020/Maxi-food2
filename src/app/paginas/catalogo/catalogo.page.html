@@ -1,44 +1,706 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Catálogo Maxi-Food</ion-title>
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar color="primary" class="main-toolbar">
+    <ion-title>
+      <div class="header-brand">
+        <div class="brand-icon">
+          <ion-icon name="paw-outline"></ion-icon>
+        </div>
+        <div class="brand-text">
+          <span class="app-name">Maxi-Food</span>
+          <span class="user-greeting" *ngIf="tienda.usuarioActual">
+            Hola, {{ tienda.usuarioActual.nombre }} • 🐾 {{ tienda.usuarioActual.nombreMascota }}
+          </span>
+          <span class="user-greeting" *ngIf="!tienda.usuarioActual">
+            Tienda de Nutrición Animal
+          </span>
+        </div>
+      </div>
+    </ion-title>
+
+    <ion-buttons slot="end" class="header-actions">
+      <!-- Botón Favoritos -->
+      <ion-button (click)="seleccionarCategoria(categoriaActual === 'favoritos' ? 'todos' : 'favoritos')" title="Mis Favoritos">
+        <ion-icon [name]="categoriaActual === 'favoritos' ? 'heart' : 'heart-outline'" slot="icon-only"></ion-icon>
+        <ion-badge color="danger" *ngIf="tienda.favoritosIds.length > 0" class="floating-badge">
+          {{ tienda.favoritosIds.length }}
+        </ion-badge>
+      </ion-button>
+
+      <!-- Botón Perfil y Pedidos -->
+      <ion-button (click)="abrirModalPerfil()" title="Mi Perfil y Pedidos">
+        <ion-icon name="person-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+
+      <!-- Botón Carrito -->
+      <ion-button (click)="mostrarModalCarrito = true" class="cart-header-btn" title="Ver Carrito">
+        <ion-icon name="cart-outline" slot="icon-only"></ion-icon>
+        <ion-badge color="warning" *ngIf="tienda.totalItemsCarrito > 0" class="floating-badge">
+          {{ tienda.totalItemsCarrito }}
+        </ion-badge>
+      </ion-button>
+
+      <!-- Botón Cerrar Sesión -->
+      <ion-button (click)="cerrarSesion()" title="Cerrar sesión">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" [fullscreen]="true">
-  <ion-searchbar placeholder="Buscar alimento o marca..." (ionInput)="filtrar($event)"></ion-searchbar>
+<ion-content [fullscreen]="true" class="catalog-content">
+  <div class="catalog-container">
+    <!-- Banner Promocional -->
+    <div class="promo-hero">
+      <div class="promo-text">
+        <ion-chip class="promo-chip">
+          <ion-icon name="sparkles-outline"></ion-icon>
+          <ion-label>Semana Mascota Feliz</ion-label>
+        </ion-chip>
+        <h2>Hasta 20% OFF + Cupón Especial</h2>
+        <p>
+          Usa el código <strong>MAXI10</strong> para un 10% adicional en toda la tienda.
+          ¡Envío gratis por compras superiores a $120.000 COP!
+        </p>
+        <div class="promo-actions">
+          <ion-button
+            size="small"
+            shape="round"
+            color="light"
+            (click)="aplicarCuponPromo('MAXI10')"
+          >
+            <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+            {{ tienda.cuponAplicado === 'MAXI10' ? 'Cupón MAXI10 Activo ✓' : 'Activar Cupón MAXI10' }}
+          </ion-button>
+        </div>
+      </div>
+      <div class="promo-visual">
+        <span class="pet-emoji">🐶🐱</span>
+      </div>
+    </div>
 
-  <ion-segment value="todos" (ionChange)="cambiarCategoria($event)">
-    <ion-segment-button value="todos">
-      <ion-label>Todos</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="perro">
-      <ion-label>Perros</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="gato">
-      <ion-label>Gatos</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+    <!-- Barra de progreso para Envío Gratis -->
+    <div class="shipping-progress-card">
+      <div class="shipping-info">
+        <span *ngIf="faltanteEnvioGratis > 0">
+          🚚 Te faltan <strong>${{ faltanteEnvioGratis | number }} COP</strong> para obtener <strong>Envío Gratis</strong>
+        </span>
+        <span *ngIf="faltanteEnvioGratis === 0" class="free-unlocked">
+          🎉 ¡Felicidades! Ya tienes <strong>Envío Gratis</strong> en tu pedido
+        </span>
+        <span class="pct">{{ porcentajeMetaEnvioGratis }}%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="porcentajeMetaEnvioGratis"></div>
+      </div>
+    </div>
 
-  <ion-grid class="ion-margin-top">
-    <ion-row>
-      <ion-col size="12" size-md="6" *ngFor="let item of productosFiltrados">
-        <ion-card>
-          <ion-card-header>
-            <ion-card-subtitle>{{ item.categoria | uppercase }} - {{ item.etapa }}</ion-card-subtitle>
-            <ion-card-title>{{ item.nombre }}</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <p>{{ item.descripcion }}</p>
-            <h3 style="color: var(--ion-color-primary); font-weight: bold; margin-top: 8px;">
-              ${{ item.precio | number }} COP
-            </h3>
-            <ion-button expand="block" shape="round" color="success" class="ion-margin-top">
-              <ion-icon name="cart-outline" slot="start"></ion-icon>
-              Comprar
+    <!-- Buscador -->
+    <div class="search-bar-wrapper">
+      <ion-searchbar
+        placeholder="Buscar croquetas, salmón, snacks, cachorro..."
+        (ionInput)="filtrar($event)"
+        class="custom-searchbar"
+      ></ion-searchbar>
+    </div>
+
+    <!-- Filtros por Categoría y Orden -->
+    <div class="filters-row">
+      <div class="category-pills">
+        <button
+          type="button"
+          class="cat-pill"
+          [class.active]="categoriaActual === 'todos'"
+          (click)="seleccionarCategoria('todos')"
+        >
+          🐾 Todos ({{ tienda.productos.length }})
+        </button>
+        <button
+          type="button"
+          class="cat-pill"
+          [class.active]="categoriaActual === 'perro'"
+          (click)="seleccionarCategoria('perro')"
+        >
+          🐕 Perros
+        </button>
+        <button
+          type="button"
+          class="cat-pill"
+          [class.active]="categoriaActual === 'gato'"
+          (click)="seleccionarCategoria('gato')"
+        >
+          🐈 Gatos
+        </button>
+        <button
+          type="button"
+          class="cat-pill"
+          [class.active]="categoriaActual === 'snack'"
+          (click)="seleccionarCategoria('snack')"
+        >
+          🦴 Snacks
+        </button>
+        <button
+          type="button"
+          class="cat-pill fav-pill"
+          [class.active]="categoriaActual === 'favoritos'"
+          (click)="seleccionarCategoria('favoritos')"
+        >
+          ❤️ Favoritos ({{ tienda.favoritosIds.length }})
+        </button>
+      </div>
+
+      <div class="sort-pills">
+        <span class="sort-label">Ordenar:</span>
+        <button
+          type="button"
+          [class.active]="ordenActual === 'destacados'"
+          (click)="cambiarOrden('destacados')"
+        >
+          Destacados
+        </button>
+        <button
+          type="button"
+          [class.active]="ordenActual === 'precio-asc'"
+          (click)="cambiarOrden('precio-asc')"
+        >
+          Menor precio
+        </button>
+        <button
+          type="button"
+          [class.active]="ordenActual === 'rating'"
+          (click)="cambiarOrden('rating')"
+        >
+          Mejor valorados ★
+        </button>
+      </div>
+    </div>
+
+    <!-- Estado Vacío -->
+    <div class="empty-state" *ngIf="productosFiltrados.length === 0">
+      <div class="empty-icon">🔍</div>
+      <h3>No encontramos productos con ese filtro</h3>
+      <p>Intenta buscar otro término o explora todas las categorías.</p>
+      <ion-button shape="round" (click)="seleccionarCategoria('todos')">
+        Ver todos los productos
+      </ion-button>
+    </div>
+
+    <!-- Grilla de Productos -->
+    <ion-grid class="products-grid" *ngIf="productosFiltrados.length > 0">
+      <ion-row>
+        <ion-col
+          size="12"
+          size-sm="6"
+          size-md="4"
+          size-lg="3"
+          *ngFor="let item of productosFiltrados"
+        >
+          <ion-card class="product-card" (click)="abrirDetalle(item)">
+            <!-- Imagen y Badges -->
+            <div class="image-wrapper">
+              <img [src]="item.imagen" [alt]="item.nombre" loading="lazy" />
+
+              <span class="discount-badge" *ngIf="item.descuento">
+                -{{ item.descuento }}%
+              </span>
+
+              <span class="category-tag" [attr.data-cat]="item.categoria">
+                {{ item.categoria === 'perro' ? '🐕 Perro' : item.categoria === 'gato' ? '🐈 Gato' : '🦴 Snack' }}
+              </span>
+
+              <button
+                type="button"
+                class="fav-btn"
+                [class.is-fav]="tienda.esFavorito(item.id)"
+                (click)="toggleFavorito(item, $event)"
+                title="Guardar en favoritos"
+              >
+                <ion-icon [name]="tienda.esFavorito(item.id) ? 'heart' : 'heart-outline'"></ion-icon>
+              </button>
+            </div>
+
+            <ion-card-header>
+              <div class="meta-top">
+                <ion-card-subtitle>{{ item.marca }} • {{ item.etapa }}</ion-card-subtitle>
+                <div class="rating-pill">
+                  <ion-icon name="star"></ion-icon>
+                  <span>{{ item.rating }}</span>
+                  <small>({{ item.reviews }})</small>
+                </div>
+              </div>
+              <ion-card-title>{{ item.nombre }}</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <p class="short-desc">{{ item.descripcion }}</p>
+
+              <!-- Chips nutricionales rápidos -->
+              <div class="nutrition-mini">
+                <span>🥩 {{ item.nutricion.proteina }} Prot.</span>
+                <span>📦 {{ item.pesos[1]?.etiqueta || item.pesos[0].etiqueta }}</span>
+              </div>
+
+              <!-- Precios -->
+              <div class="price-row">
+                <div class="price-block">
+                  <span class="old-price" *ngIf="item.precioAnterior">
+                    ${{ item.precioAnterior | number }}
+                  </span>
+                  <span class="current-price">
+                    ${{ item.precio | number }} <small>COP</small>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Botones de Acción -->
+              <div class="card-actions">
+                <ion-button
+                  fill="outline"
+                  shape="round"
+                  size="small"
+                  color="medium"
+                  (click)="abrirDetalle(item); $event.stopPropagation()"
+                >
+                  <ion-icon name="eye-outline" slot="start"></ion-icon>
+                  Detalle
+                </ion-button>
+
+                <ion-button
+                  shape="round"
+                  size="small"
+                  color="primary"
+                  class="buy-btn"
+                  (click)="agregarRapido(item, $event)"
+                >
+                  <ion-icon name="cart-outline" slot="start"></ion-icon>
+                  Agregar
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- MODAL 1: DETALLE DE PRODUCTO -->
+  <ion-modal [isOpen]="!!productoDetalle" (didDismiss)="cerrarDetalle()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="primary">
+          <ion-title>{{ productoDetalle?.marca }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarDetalle()">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
             </ion-button>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" *ngIf="productoDetalle as prod">
+        <div class="detail-modal-body">
+          <div class="detail-image-box">
+            <img [src]="prod.imagen" [alt]="prod.nombre" />
+            <span class="discount-badge" *ngIf="prod.descuento">-{{ prod.descuento }}% OFF</span>
+            <button
+              type="button"
+              class="fav-btn"
+              [class.is-fav]="tienda.esFavorito(prod.id)"
+              (click)="toggleFavorito(prod)"
+            >
+              <ion-icon [name]="tienda.esFavorito(prod.id) ? 'heart' : 'heart-outline'"></ion-icon>
+            </button>
+          </div>
+
+          <div class="detail-header">
+            <div class="detail-badges">
+              <ion-chip color="primary">
+                <ion-label>{{ prod.categoria | uppercase }}</ion-label>
+              </ion-chip>
+              <ion-chip color="secondary">
+                <ion-label>{{ prod.etapa }}</ion-label>
+              </ion-chip>
+              <div class="rating-pill">
+                <ion-icon name="star"></ion-icon>
+                <strong>{{ prod.rating }}</strong>
+                <span>({{ prod.reviews }} reseñas)</span>
+              </div>
+            </div>
+
+            <h2>{{ prod.nombre }}</h2>
+            <p class="long-desc">{{ prod.descripcionLarga }}</p>
+          </div>
+
+          <!-- Selección de presentación / peso -->
+          <div class="detail-section">
+            <h4>Selecciona el tamaño del empaque:</h4>
+            <div class="weight-options">
+              <button
+                type="button"
+                *ngFor="let p of prod.pesos"
+                [class.active]="pesoDetalleSeleccionado === p.etiqueta"
+                (click)="pesoDetalleSeleccionado = p.etiqueta"
+              >
+                <span class="w-label">{{ p.etiqueta }}</span>
+                <span class="w-price">
+                  ${{ tienda.calcularPrecioPorPeso(prod, p.etiqueta) | number }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Información Nutricional -->
+          <div class="detail-section">
+            <h4>
+              <ion-icon name="nutrition-outline"></ion-icon>
+              Análisis Garantizado
+            </h4>
+            <div class="nutrition-grid">
+              <div class="nutri-item">
+                <span class="n-val">{{ prod.nutricion.proteina }}</span>
+                <span class="n-lbl">Proteína</span>
+              </div>
+              <div class="nutri-item">
+                <span class="n-val">{{ prod.nutricion.grasa }}</span>
+                <span class="n-lbl">Grasa</span>
+              </div>
+              <div class="nutri-item">
+                <span class="n-val">{{ prod.nutricion.fibra }}</span>
+                <span class="n-lbl">Fibra</span>
+              </div>
+              <div class="nutri-item">
+                <span class="n-val">{{ prod.nutricion.humedad }}</span>
+                <span class="n-lbl">Humedad</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ingredientes y Beneficios -->
+          <div class="detail-section">
+            <h4>
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+              Ingredientes Principales y Beneficios
+            </h4>
+            <div class="ingredients-chips">
+              <span class="ing-tag" *ngFor="let ing of prod.ingredientes">{{ ing }}</span>
+            </div>
+            <ul class="benefits-list">
+              <li *ngFor="let ben of prod.beneficios">✓ {{ ben }}</li>
+            </ul>
+          </div>
+        </div>
+      </ion-content>
+
+      <ion-footer class="detail-footer" *ngIf="productoDetalle">
+        <div class="detail-purchase-bar">
+          <div class="qty-control">
+            <button type="button" (click)="cambiarCantidadDetalle(-1)">
+              <ion-icon name="remove-outline"></ion-icon>
+            </button>
+            <span>{{ cantidadDetalle }}</span>
+            <button type="button" (click)="cambiarCantidadDetalle(1)">
+              <ion-icon name="add-outline"></ion-icon>
+            </button>
+          </div>
+
+          <ion-button
+            expand="block"
+            shape="round"
+            color="primary"
+            class="add-detail-btn"
+            (click)="agregarDesdeDetalle()"
+          >
+            <ion-icon name="cart-outline" slot="start"></ion-icon>
+            Agregar • ${{ (precioDetalleActual * cantidadDetalle) | number }} COP
+          </ion-button>
+        </div>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <!-- MODAL 2: CARRITO DE COMPRAS Y CHECKOUT -->
+  <ion-modal [isOpen]="mostrarModalCarrito" (didDismiss)="mostrarModalCarrito = false">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="primary">
+          <ion-title>Tu Carrito ({{ tienda.totalItemsCarrito }})</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="mostrarModalCarrito = false">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <!-- Carrito vacío -->
+        <div class="empty-state" *ngIf="tienda.carrito.length === 0">
+          <div class="empty-icon">🛒</div>
+          <h3>Tu carrito está vacío</h3>
+          <p>Agrega croquetas, comida húmeda o snacks para consentir a tu mascota.</p>
+          <ion-button shape="round" (click)="mostrarModalCarrito = false">
+            Explorar Catálogo
+          </ion-button>
+        </div>
+
+        <!-- Lista de productos en el carrito -->
+        <div class="cart-body" *ngIf="tienda.carrito.length > 0">
+          <div class="cart-item" *ngFor="let item of tienda.carrito; let i = index">
+            <img [src]="item.producto.imagen" [alt]="item.producto.nombre" />
+            <div class="cart-item-info">
+              <h4>{{ item.producto.nombre }}</h4>
+              <span class="weight-pill">{{ item.pesoSeleccionado }}</span>
+              <span class="unit-price">${{ item.precioUnitario | number }} c/u</span>
+            </div>
+            <div class="cart-item-actions">
+              <div class="qty-mini">
+                <button type="button" (click)="tienda.cambiarCantidad(i, -1)">-</button>
+                <span>{{ item.cantidad }}</span>
+                <button type="button" (click)="tienda.cambiarCantidad(i, 1)">+</button>
+              </div>
+              <span class="item-subtotal">
+                ${{ (item.precioUnitario * item.cantidad) | number }}
+              </span>
+              <button
+                type="button"
+                class="delete-item-btn"
+                (click)="tienda.eliminarDelCarrito(i)"
+                title="Eliminar"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cupón de Descuento -->
+          <div class="coupon-box">
+            <ion-item lines="none" class="coupon-input-item">
+              <ion-icon name="pricetag-outline" slot="start" color="primary"></ion-icon>
+              <ion-input
+                placeholder="Código promocional (Ej. MAXI10)"
+                [(ngModel)]="codigoCuponInput"
+              ></ion-input>
+              <ion-button
+                slot="end"
+                shape="round"
+                size="small"
+                (click)="canjearCuponModal()"
+              >
+                Aplicar
+              </ion-button>
+            </ion-item>
+          </div>
+
+          <!-- Datos de Entrega y Pago -->
+          <div class="checkout-form">
+            <h4>Datos de Entrega y Pago</h4>
+            <ion-item lines="none" class="checkout-input">
+              <ion-icon name="location-outline" slot="start" color="primary"></ion-icon>
+              <ion-input
+                label="Dirección de envío"
+                labelPlacement="stacked"
+                [(ngModel)]="direccionEntregaInput"
+                placeholder="Calle / Carrera / Apartamento"
+              ></ion-input>
+            </ion-item>
+
+            <div class="payment-methods">
+              <button
+                type="button"
+                [class.active]="metodoPagoSeleccionado === 'Contraentrega'"
+                (click)="metodoPagoSeleccionado = 'Contraentrega'"
+              >
+                <ion-icon name="cash-outline"></ion-icon>
+                <span>Contraentrega</span>
+              </button>
+              <button
+                type="button"
+                [class.active]="metodoPagoSeleccionado === 'PSE / Nequi'"
+                (click)="metodoPagoSeleccionado = 'PSE / Nequi'"
+              >
+                <ion-icon name="phone-portrait-outline"></ion-icon>
+                <span>PSE / Nequi</span>
+              </button>
+              <button
+                type="button"
+                [class.active]="metodoPagoSeleccionado === 'Tarjeta'"
+                (click)="metodoPagoSeleccionado = 'Tarjeta'"
+              >
+                <ion-icon name="card-outline"></ion-icon>
+                <span>Tarjeta</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Resumen de Totales -->
+          <div class="summary-card">
+            <div class="summary-line">
+              <span>Subtotal ({{ tienda.totalItemsCarrito }} productos)</span>
+              <span>${{ tienda.subtotalCarrito | number }} COP</span>
+            </div>
+            <div class="summary-line discount" *ngIf="tienda.descuentoCupon > 0">
+              <span>Descuento cupón ({{ tienda.cuponAplicado }})</span>
+              <span>-${{ tienda.descuentoCupon | number }} COP</span>
+            </div>
+            <div class="summary-line">
+              <span>Costo de envío</span>
+              <span [class.free]="tienda.costoEnvio === 0">
+                {{ tienda.costoEnvio === 0 ? '¡GRATIS!' : ('$' + (tienda.costoEnvio | number) + ' COP') }}
+              </span>
+            </div>
+            <div class="summary-line total">
+              <span>Total a pagar</span>
+              <span>${{ tienda.totalPagar | number }} COP</span>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+
+      <ion-footer class="detail-footer" *ngIf="tienda.carrito.length > 0">
+        <div class="checkout-footer-bar">
+          <ion-button
+            fill="clear"
+            color="danger"
+            size="small"
+            (click)="tienda.vaciarCarrito()"
+          >
+            Vaciar
+          </ion-button>
+          <ion-button
+            expand="block"
+            shape="round"
+            color="success"
+            class="confirm-order-btn"
+            (click)="confirmarPedido()"
+          >
+            <ion-icon name="bag-check-outline" slot="start"></ion-icon>
+            Confirmar Pedido • ${{ tienda.totalPagar | number }} COP
+          </ion-button>
+        </div>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <!-- MODAL 3: MI PERFIL, MASCOTA E HISTORIAL DE PEDIDOS -->
+  <ion-modal [isOpen]="mostrarModalPerfil" (didDismiss)="mostrarModalPerfil = false">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="primary">
+          <ion-title>Mi Perfil y Mascota 🐾</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="mostrarModalPerfil = false">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <div class="profile-modal-body">
+          <div class="profile-hero">
+            <div class="avatar-circle">
+              {{ (perfilEdit.nombre || 'M').charAt(0) | uppercase }}
+            </div>
+            <h3>{{ perfilEdit.nombre }}</h3>
+            <p>{{ perfilEdit.correo }}</p>
+            <ion-chip color="secondary">
+              <ion-icon name="paw-outline"></ion-icon>
+              <ion-label>Mascota: {{ perfilEdit.nombreMascota }}</ion-label>
+            </ion-chip>
+          </div>
+
+          <div class="profile-form-card">
+            <h4>Actualizar Datos</h4>
+            <ion-item lines="none" class="checkout-input">
+              <ion-input
+                label="Tu nombre"
+                labelPlacement="stacked"
+                [(ngModel)]="perfilEdit.nombre"
+              ></ion-input>
+            </ion-item>
+            <ion-item lines="none" class="checkout-input">
+              <ion-input
+                label="Nombre de tu mascota"
+                labelPlacement="stacked"
+                [(ngModel)]="perfilEdit.nombreMascota"
+              ></ion-input>
+            </ion-item>
+            <ion-item lines="none" class="checkout-input">
+              <ion-input
+                label="Dirección predeterminada"
+                labelPlacement="stacked"
+                [(ngModel)]="perfilEdit.direccion"
+              ></ion-input>
+            </ion-item>
+
+            <ion-button
+              expand="block"
+              shape="round"
+              color="primary"
+              (click)="guardarCambiosPerfil()"
+            >
+              <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+              Guardar Cambios
+            </ion-button>
+          </div>
+
+          <!-- Historial de Pedidos -->
+          <div class="orders-history">
+            <h4>Mis Pedidos Recientes ({{ tienda.pedidos.length }})</h4>
+            <p class="no-orders" *ngIf="tienda.pedidos.length === 0">
+              Aún no has realizado pedidos. ¡Tu mascota espera su primer paquete!
+            </p>
+
+            <div class="order-card" *ngFor="let ped of tienda.pedidos">
+              <div class="order-top">
+                <strong>Pedido {{ ped.id }}</strong>
+                <span class="order-status">{{ ped.estado }}</span>
+              </div>
+              <div class="order-meta">
+                <span><ion-icon name="time-outline"></ion-icon> {{ ped.fecha }}</span>
+                <span>• {{ ped.metodoPago }}</span>
+              </div>
+              <div class="order-items-preview">
+                <span *ngFor="let it of ped.items">
+                  {{ it.cantidad }}x {{ it.producto.nombre }} ({{ it.pesoSeleccionado }})
+                </span>
+              </div>
+              <div class="order-bottom">
+                <span>📍 {{ ped.direccion }}</span>
+                <strong>${{ ped.total | number }} COP</strong>
+              </div>
+            </div>
+          </div>
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            color="danger"
+            shape="round"
+            class="ion-margin-top"
+            (click)="cerrarSesion()"
+          >
+            <ion-icon name="log-out-outline" slot="start"></ion-icon>
+            Cerrar Sesión
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>
+
+<!-- Barra flotante inferior cuando hay productos en el carrito -->
+<ion-footer class="ion-no-border" *ngIf="tienda.totalItemsCarrito > 0">
+  <div class="floating-cart-bar" (click)="mostrarModalCarrito = true">
+    <div class="cart-left">
+      <div class="cart-count-pill">{{ tienda.totalItemsCarrito }}</div>
+      <div class="cart-text">
+        <strong>Ver mi carrito</strong>
+        <span>{{ tienda.costoEnvio === 0 ? '¡Con envío gratis!' : 'Toca para finalizar compra' }}</span>
+      </div>
+    </div>
+    <div class="cart-right">
+      <span class="total-amount">${{ tienda.totalPagar | number }} COP</span>
+      <ion-icon name="cart-outline"></ion-icon>
+    </div>
+  </div>
+</ion-footer>
