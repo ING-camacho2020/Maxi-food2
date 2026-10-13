@@ -1,3 +1,9 @@
+/**
+ * @file login.page.ts
+ * @description Componente encargado de la pantalla de bienvenida, inicio de sesión
+ * y registro de nuevos usuarios junto con la información de su mascota.
+ */
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -55,14 +61,17 @@ import { TiendaService } from '../../services/tienda.service';
   ]
 })
 export class LoginPage {
+  // Controla qué pestaña del formulario se muestra: 'login' (Iniciar Sesión) o 'registro' (Crear Cuenta)
   modo: 'login' | 'registro' = 'login';
+
+  // Permite alternar la visibilidad de la contraseña entre texto oculto y texto plano
   mostrarPassword = false;
 
-  // Campos de login
+  // Datos vinculados (ngModel) para el inicio de sesión
   correo: string = '';
   password: string = '';
 
-  // Campos de registro
+  // Datos adicionales vinculados (ngModel) para el formulario de registro
   nombre: string = '';
   nombreMascota: string = '';
   tipoMascota: 'perro' | 'gato' | 'ambos' = 'perro';
@@ -74,6 +83,7 @@ export class LoginPage {
     private tiendaService: TiendaService,
     private toastCtrl: ToastController
   ) {
+    // Registro explícito de los íconos de Ionicons utilizados en la plantilla
     addIcons({
       mailOutline,
       lockClosedOutline,
@@ -90,10 +100,17 @@ export class LoginPage {
     });
   }
 
+  /**
+   * Cambia entre la vista de inicio de sesión y la de creación de cuenta
+   * cuando el usuario interactúa con el `<ion-segment>`.
+   */
   cambiarModo(event: any) {
     this.modo = event.detail.value;
   }
 
+  /**
+   * Muestra una notificación emergente (Toast) en la parte superior de la pantalla.
+   */
   async mostrarMensaje(mensaje: string, color: 'success' | 'warning' | 'danger' = 'success') {
     const toast = await this.toastCtrl.create({
       message: mensaje,
@@ -104,6 +121,10 @@ export class LoginPage {
     await toast.present();
   }
 
+  /**
+   * Valida que los campos obligatorios estén completos, inicia la sesión en `TiendaService`
+   * y navega hacia la vista principal del catálogo (`/catalogo`).
+   */
   async iniciarSesion() {
     if (!this.correo.trim() || !this.password.trim()) {
       await this.mostrarMensaje('Por favor ingresa tu correo y contraseña', 'warning');
@@ -120,14 +141,21 @@ export class LoginPage {
     this.router.navigate(['/catalogo']);
   }
 
+  /**
+   * Permite ingresar con un solo clic usando una cuenta de demostración preconfigurada.
+   */
   async accesoDemo() {
-    this.correo = 'cliente@maxifood.co';
+    this.correo = 'daniela@maxifood.co';
     this.password = 'maxi2026';
     const res = this.tiendaService.iniciarSesion(this.correo, this.password);
     await this.mostrarMensaje(res.mensaje, 'success');
     this.router.navigate(['/catalogo']);
   }
 
+  /**
+   * Registra un nuevo usuario junto con los datos de su mascota en `TiendaService`
+   * y redirige inmediatamente al catálogo.
+   */
   async registrarCuenta() {
     if (!this.nombre.trim() || !this.correo.trim() || !this.password.trim()) {
       await this.mostrarMensaje('Completa tu nombre, correo y contraseña para registrarte', 'warning');

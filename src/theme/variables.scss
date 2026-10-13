@@ -1,36 +1,36 @@
-// Maxi-Food Custom Theme Variables
+// Maxi-Food Custom Theme Variables (Green Palette)
 :root {
-  /** Primary: Warm Pet Orange **/
-  --ion-color-primary: #ff6b35;
-  --ion-color-primary-rgb: 255, 107, 53;
+  /** Primary: Maxi Green **/
+  --ion-color-primary: #178637;
+  --ion-color-primary-rgb: 23, 134, 55;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #e05e2f;
-  --ion-color-primary-tint: #ff7a49;
+  --ion-color-primary-shade: #147630;
+  --ion-color-primary-tint: #2e924b;
 
-  /** Secondary: Teal / Mint **/
-  --ion-color-secondary: #2ec4b6;
-  --ion-color-secondary-rgb: 46, 196, 182;
+  /** Secondary: Warm Amber **/
+  --ion-color-secondary: #e59516;
+  --ion-color-secondary-rgb: 229, 149, 22;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #28aca0;
-  --ion-color-secondary-tint: #43cabd;
+  --ion-color-secondary-shade: #ca8313;
+  --ion-color-secondary-tint: #e8a02d;
 
-  /** Tertiary: Warm Purple/Indigo **/
-  --ion-color-tertiary: #6c5ce7;
-  --ion-color-tertiary-rgb: 108, 92, 231;
+  /** Tertiary: Emerald Teal **/
+  --ion-color-tertiary: #0d9488;
+  --ion-color-tertiary-rgb: 13, 148, 136;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #5f51cb;
-  --ion-color-tertiary-tint: #7b6ce9;
+  --ion-color-tertiary-shade: #0b8278;
+  --ion-color-tertiary-tint: #259f94;
 
   /** Success **/
-  --ion-color-success: #10b981;
-  --ion-color-success-rgb: 16, 185, 129;
+  --ion-color-success: #249c46;
+  --ion-color-success-rgb: 36, 156, 70;
   --ion-color-success-contrast: #ffffff;
   --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #0ea372;
-  --ion-color-success-tint: #28c08e;
+  --ion-color-success-shade: #20893e;
+  --ion-color-success-tint: #3aa659;
 
   /** Warning **/
   --ion-color-warning: #f59e0b;

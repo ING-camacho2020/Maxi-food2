@@ -67,9 +67,9 @@
   padding: 16px 16px 90px;
 }
 
-/* Banner Promocional */
+/* Banner Promocional en Verde */
 .promo-hero {
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 55%, #2ec4b6 100%);
+  background: linear-gradient(135deg, #178637 0%, #249c46 65%, #0d9488 100%);
   border-radius: 24px;
   padding: 22px 24px;
   color: #ffffff;
@@ -77,7 +77,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  box-shadow: 0 12px 28px rgba(255, 107, 53, 0.22);
+  box-shadow: 0 12px 28px rgba(23, 134, 55, 0.24);
   margin-bottom: 14px;
 
   .promo-text {
@@ -139,12 +139,12 @@
     margin-bottom: 8px;
 
     .free-unlocked {
-      color: #059669;
+      color: #178637;
     }
 
     .pct {
       font-weight: 800;
-      color: #ff6b35;
+      color: #178637;
     }
   }
 
@@ -157,7 +157,7 @@
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #ff6b35, #10b981);
+      background: linear-gradient(90deg, #178637, #e59516);
       border-radius: 99px;
       transition: width 0.35s ease;
     }
@@ -204,14 +204,14 @@
       transition: all 0.2s ease;
 
       &:hover {
-        border-color: #ff6b35;
+        border-color: #178637;
       }
 
       &.active {
-        background: #ff6b35;
-        border-color: #ff6b35;
+        background: #178637;
+        border-color: #178637;
         color: #ffffff;
-        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.28);
+        box-shadow: 0 4px 12px rgba(23, 134, 55, 0.28);
       }
 
       &.fav-pill.active {
@@ -245,7 +245,7 @@
       cursor: pointer;
 
       &.active {
-        background: #1e293b;
+        background: #178637;
         color: #ffffff;
       }
     }
@@ -295,20 +295,20 @@
       position: absolute;
       top: 12px;
       left: 12px;
-      background: #ef4444;
+      background: #e59516;
       color: #ffffff;
       font-weight: 800;
       font-size: 0.75rem;
       padding: 4px 10px;
       border-radius: 99px;
-      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
+      box-shadow: 0 4px 10px rgba(229, 149, 22, 0.35);
     }
 
     .category-tag {
       position: absolute;
       bottom: 10px;
       left: 12px;
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(23, 134, 55, 0.85);
       backdrop-filter: blur(6px);
       color: #ffffff;
       font-size: 0.72rem;
@@ -389,8 +389,8 @@
       margin-bottom: 12px;
 
       span {
-        background: #f1f5f9;
-        color: #334155;
+        background: #ecfdf5;
+        color: #15803d;
         font-size: 0.73rem;
         font-weight: 700;
         padding: 4px 8px;
@@ -415,7 +415,7 @@
         .current-price {
           font-size: 1.25rem;
           font-weight: 800;
-          color: #ff6b35;
+          color: #178637;
 
           small {
             font-size: 0.72rem;
@@ -507,7 +507,7 @@
       position: absolute;
       top: 12px;
       left: 12px;
-      background: #ef4444;
+      background: #e59516;
       color: #ffffff;
       font-weight: 800;
       font-size: 0.8rem;
@@ -585,7 +585,7 @@
       color: #1e293b;
 
       ion-icon {
-        color: #ff6b35;
+        color: #178637;
       }
     }
   }
@@ -619,12 +619,12 @@
       }
 
       &.active {
-        border-color: #ff6b35;
-        background: rgba(255, 107, 53, 0.08);
+        border-color: #178637;
+        background: rgba(23, 134, 55, 0.08);
 
         .w-label,
         .w-price {
-          color: #ff6b35;
+          color: #178637;
         }
       }
     }
@@ -646,7 +646,7 @@
         display: block;
         font-weight: 800;
         font-size: 1rem;
-        color: #ff6b35;
+        color: #178637;
       }
 
       .n-lbl {
@@ -679,7 +679,7 @@
 
     li {
       font-size: 0.86rem;
-      color: #059669;
+      color: #178637;
       font-weight: 600;
       margin-bottom: 4px;
     }
@@ -799,7 +799,7 @@
           font-weight: 800;
           font-size: 0.95rem;
           cursor: pointer;
-          color: #ff6b35;
+          color: #178637;
         }
 
         span {
@@ -876,9 +876,9 @@
         }
 
         &.active {
-          border-color: #ff6b35;
-          background: rgba(255, 107, 53, 0.1);
-          color: #ff6b35;
+          border-color: #178637;
+          background: rgba(23, 134, 55, 0.1);
+          color: #178637;
         }
       }
     }
@@ -898,12 +898,12 @@
       margin-bottom: 8px;
 
       &.discount {
-        color: #059669;
+        color: #178637;
         font-weight: 700;
       }
 
       .free {
-        color: #059669;
+        color: #178637;
         font-weight: 800;
       }
 
@@ -930,7 +930,7 @@
       width: 64px;
       height: 64px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #ff6b35, #f7931e);
+      background: linear-gradient(135deg, #178637, #249c46);
       color: #ffffff;
       font-size: 1.6rem;
       font-weight: 800;
@@ -1040,7 +1040,7 @@
         color: #475569;
 
         strong {
-          color: #ff6b35;
+          color: #178637;
         }
       }
     }
@@ -1049,7 +1049,7 @@
 
 /* Barra flotante inferior del carrito */
 .floating-cart-bar {
-  background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(90deg, #178637 0%, #146c2c 100%);
   color: #ffffff;
   margin: 0 16px 14px;
   padding: 12px 18px;
@@ -1057,7 +1057,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.3);
+  box-shadow: 0 12px 28px rgba(23, 134, 55, 0.3);
   cursor: pointer;
 
   .cart-left {
@@ -1066,7 +1066,7 @@
     gap: 12px;
 
     .cart-count-pill {
-      background: #ff6b35;
+      background: #e59516;
       color: #ffffff;
       width: 32px;
       height: 32px;
@@ -1088,7 +1088,7 @@
 
       span {
         font-size: 0.74rem;
-        color: #94a3b8;
+        color: rgba(255, 255, 255, 0.88);
       }
     }
   }
@@ -1101,7 +1101,7 @@
     .total-amount {
       font-weight: 800;
       font-size: 1.02rem;
-      color: #fbbf24;
+      color: #fde68a;
     }
 
     ion-icon {

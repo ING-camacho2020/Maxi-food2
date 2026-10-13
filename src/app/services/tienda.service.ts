@@ -1,25 +1,42 @@
+/**
+ * @file tienda.service.ts
+ * @description Servicio centralizado (Singleton) que administra toda la lógica de negocio
+ * y el estado de la tienda Maxi-Food:
+ * - Catálogo de productos con información nutricional, presentaciones por peso y precios.
+ * - Autenticación, registro de usuarios y perfil de mascota.
+ * - Gestión del carrito de compras, cálculo de envío gratis y aplicación de cupones.
+ * - Lista de favoritos e historial de pedidos con persistencia en `localStorage`.
+ */
+
 import { Injectable } from '@angular/core';
 
+/**
+ * Representa una presentación o tamaño de empaque disponible para un producto
+ * (por ejemplo: "1.5 kg", "4 kg", "10 kg") junto con su factor multiplicador de precio.
+ */
 export interface PesoOpcion {
   etiqueta: string;
   multiplicador: number;
 }
 
+/**
+ * Estructura de datos de un producto dentro del catálogo de Maxi-Food.
+ */
 export interface Producto {
   id: number;
   nombre: string;
   marca: string;
   categoria: 'perro' | 'gato' | 'snack';
   etapa: string;
-  precio: number;
-  precioAnterior?: number;
-  descuento?: number;
-  descripcion: string;
-  descripcionLarga: string;
+  precio: number; // Precio base en pesos colombianos (COP)
+  precioAnterior?: number; // Precio antes del descuento (opcional)
+  descuento?: number; // Porcentaje de descuento visible en la tarjeta
+  descripcion: string; // Resumen corto para la tarjeta del catálogo
+  descripcionLarga: string; // Descripción detallada para el modal del producto
   imagen: string;
-  rating: number;
-  reviews: number;
-  pesos: PesoOpcion[];
+  rating: number; // Calificación promedio (de 1 a 5 estrellas)
+  reviews: number; // Cantidad total de reseñas
+  pesos: PesoOpcion[]; // Presentaciones disponibles
   nutricion: {
     proteina: string;
     grasa: string;
@@ -31,6 +48,9 @@ export interface Producto {
   destacado?: boolean;
 }
 
+/**
+ * Representa una línea dentro del carrito de compras (producto + presentación + cantidad).
+ */
 export interface ItemCarrito {
   producto: Producto;
   pesoSeleccionado: string;
@@ -38,6 +58,9 @@ export interface ItemCarrito {
   cantidad: number;
 }
 
+/**
+ * Datos del usuario autenticado y de su mascota.
+ */
 export interface Usuario {
   nombre: string;
   correo: string;
@@ -48,6 +71,9 @@ export interface Usuario {
   telefono: string;
 }
 
+/**
+ * Representa una orden de compra confirmada por el usuario.
+ */
 export interface Pedido {
   id: string;
   fecha: string;
@@ -62,12 +88,16 @@ export interface Pedido {
   providedIn: 'root'
 })
 export class TiendaService {
+  // Claves utilizadas para persistir los datos en el navegador mediante localStorage
   private readonly STORAGE_USER_KEY = 'maxifood_usuario_actual';
   private readonly STORAGE_USERS_LIST_KEY = 'maxifood_usuarios';
   private readonly STORAGE_CART_KEY = 'maxifood_carrito';
   private readonly STORAGE_FAV_KEY = 'maxifood_favoritos';
   private readonly STORAGE_ORDERS_KEY = 'maxifood_pedidos';
 
+  /**
+   * Catálogo inicial de productos de la tienda (alimentos para perro, gato y snacks).
+   */
   productos: Producto[] = [
     {
       id: 1,
@@ -247,6 +277,7 @@ export class TiendaService {
     }
   ];
 
+  // Estado reactivo de la sesión, carrito, favoritos, pedidos y cupones
   usuarioActual: Usuario | null = null;
   carrito: ItemCarrito[] = [];
   favoritosIds: number[] = [1, 4];
@@ -255,9 +286,13 @@ export class TiendaService {
   porcentajeDescuentoCupon: number = 0;
 
   constructor() {
+    // Al instanciar el servicio se recupera el estado previo guardado en el navegador
     this.cargarEstado();
   }
 
+  /**
+   * Recupera desde `localStorage` el usuario activo, el carrito, los favoritos y los pedidos.
+   */
   private cargarEstado() {
     try {
       const userStr = localStorage.getItem(this.STORAGE_USER_KEY);
@@ -280,22 +315,31 @@ export class TiendaService {
         this.pedidos = JSON.parse(ordersStr);
       }
     } catch {
-      // Ignorar errores de almacenamiento local
+      // Si el almacenamiento local está bloqueado o corrupto, continúa con valores por defecto
     }
   }
 
+  /**
+   * Sincroniza el carrito actual en `localStorage`.
+   */
   private guardarCarrito() {
     try {
       localStorage.setItem(this.STORAGE_CART_KEY, JSON.stringify(this.carrito));
     } catch {}
   }
 
+  /**
+   * Sincroniza la lista de IDs de productos favoritos en `localStorage`.
+   */
   private guardarFavoritos() {
     try {
       localStorage.setItem(this.STORAGE_FAV_KEY, JSON.stringify(this.favoritosIds));
     } catch {}
   }
 
+  /**
+   * Obtiene la lista de cuentas de usuario registradas en `localStorage`.
+   */
   private obtenerUsuariosRegistrados(): Usuario[] {
     try {
       const raw = localStorage.getItem(this.STORAGE_USERS_LIST_KEY);
@@ -305,6 +349,10 @@ export class TiendaService {
     }
   }
 
+  /**
+   * Valida las credenciales del usuario. Si el correo ya fue registrado verifica su contraseña;
+   * si es un correo nuevo, crea una sesión rápida con el nombre extraído del correo.
+   */
   iniciarSesion(correo: string, password: string): { ok: boolean; mensaje: string } {
     const correoLimpio = correo.trim().toLowerCase();
     const usuarios = this.obtenerUsuariosRegistrados();
@@ -332,6 +380,9 @@ export class TiendaService {
     return { ok: true, mensaje: `¡Bienvenido de nuevo, ${this.usuarioActual.nombre}!` };
   }
 
+  /**
+   * Registra un nuevo usuario junto con los datos de su mascota y lo deja autenticado.
+   */
   registrarUsuario(nuevo: Usuario): { ok: boolean; mensaje: string } {
     const correoLimpio = nuevo.correo.trim().toLowerCase();
     const usuarios = this.obtenerUsuariosRegistrados();
@@ -355,6 +406,9 @@ export class TiendaService {
     return { ok: true, mensaje: `¡Cuenta creada con éxito! Bienvenido(a) ${usuarioGuardado.nombre}` };
   }
 
+  /**
+   * Actualiza los datos del perfil del usuario activo (nombre, mascota o dirección).
+   */
   actualizarPerfil(datos: Partial<Usuario>) {
     if (!this.usuarioActual) return;
     this.usuarioActual = { ...this.usuarioActual, ...datos };
@@ -368,15 +422,25 @@ export class TiendaService {
     }
   }
 
+  /**
+   * Cierra la sesión activa eliminando el usuario actual de `localStorage`.
+   */
   cerrarSesion() {
     this.usuarioActual = null;
     localStorage.removeItem(this.STORAGE_USER_KEY);
   }
 
+  /**
+   * Comprueba si un producto está marcado como favorito.
+   */
   esFavorito(productoId: number): boolean {
     return this.favoritosIds.includes(productoId);
   }
 
+  /**
+   * Agrega o quita un producto de la lista de favoritos.
+   * @returns `true` si fue agregado, `false` si fue removido.
+   */
   toggleFavorito(productoId: number): boolean {
     const idx = this.favoritosIds.indexOf(productoId);
     let agregado = false;
@@ -390,12 +454,18 @@ export class TiendaService {
     return agregado;
   }
 
+  /**
+   * Calcula el precio del producto según el tamaño/peso elegido, redondeando a múltiplos de $500 COP.
+   */
   calcularPrecioPorPeso(producto: Producto, etiquetaPeso: string): number {
     const opcion = producto.pesos.find(p => p.etiqueta === etiquetaPeso);
     const mult = opcion ? opcion.multiplicador : 1;
     return Math.round((producto.precio * mult) / 500) * 500;
   }
 
+  /**
+   * Añade un producto al carrito. Si ya existe con la misma presentación de peso, incrementa su cantidad.
+   */
   agregarAlCarrito(producto: Producto, pesoSeleccionado?: string, cantidad: number = 1) {
     const peso = pesoSeleccionado || (producto.pesos[1]?.etiqueta ?? producto.pesos[0].etiqueta);
     const precioUnitario = this.calcularPrecioPorPeso(producto, peso);
@@ -417,6 +487,9 @@ export class TiendaService {
     this.guardarCarrito();
   }
 
+  /**
+   * Modifica la cantidad de un ítem en el carrito (+1 o -1). Si llega a 0, lo elimina del carrito.
+   */
   cambiarCantidad(index: number, delta: number) {
     const item = this.carrito[index];
     if (!item) return;
@@ -427,11 +500,17 @@ export class TiendaService {
     this.guardarCarrito();
   }
 
+  /**
+   * Elimina por completo una línea del carrito según su índice.
+   */
   eliminarDelCarrito(index: number) {
     this.carrito.splice(index, 1);
     this.guardarCarrito();
   }
 
+  /**
+   * Vacía todos los productos del carrito y reinicia los cupones aplicados.
+   */
   vaciarCarrito() {
     this.carrito = [];
     this.cuponAplicado = '';
@@ -439,20 +518,33 @@ export class TiendaService {
     this.guardarCarrito();
   }
 
+  /**
+   * Suma total de unidades en el carrito.
+   */
   get totalItemsCarrito(): number {
     return this.carrito.reduce((acc, item) => acc + item.cantidad, 0);
   }
 
+  /**
+   * Subtotal sin descuentos ni envío.
+   */
   get subtotalCarrito(): number {
     return this.carrito.reduce((acc, item) => acc + item.precioUnitario * item.cantidad, 0);
   }
 
+  /**
+   * Calcula el costo de envío: gratis para compras mayores o iguales a $120.000 COP,
+   * o $9.500 COP en caso contrario.
+   */
   get costoEnvio(): number {
     const sub = this.subtotalCarrito;
     if (sub === 0) return 0;
     return sub >= 120000 ? 0 : 9500;
   }
 
+  /**
+   * Valida y aplica un cupón promocional de descuento sobre el carrito.
+   */
   aplicarCupon(codigo: string): { ok: boolean; mensaje: string } {
     const limpio = codigo.trim().toUpperCase();
     if (limpio === 'MAXI10' || limpio === 'MASCOTA10') {
@@ -468,14 +560,23 @@ export class TiendaService {
     return { ok: false, mensaje: 'Cupón no válido. Prueba con MAXI10 o MAXI20.' };
   }
 
+  /**
+   * Valor en pesos del descuento otorgado por el cupón activo.
+   */
   get descuentoCupon(): number {
     return Math.round((this.subtotalCarrito * this.porcentajeDescuentoCupon) / 100);
   }
 
+  /**
+   * Total neto a pagar (Subtotal - Descuento + Envío).
+   */
   get totalPagar(): number {
     return Math.max(0, this.subtotalCarrito - this.descuentoCupon + this.costoEnvio);
   }
 
+  /**
+   * Genera un nuevo pedido con código único, lo guarda en el historial y vacía el carrito.
+   */
   crearPedido(metodoPago: string, direccion: string): Pedido {
     const nuevoPedido: Pedido = {
       id: 'MF-' + Math.floor(100000 + Math.random() * 900000),
