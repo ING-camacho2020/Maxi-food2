@@ -75,6 +75,27 @@
             Ingresar a la Tienda
           </ion-button>
 
+          <!-- Autenticación Social OAuth 2.0 (Google & Facebook) -->
+          <div class="divider">
+            <span>o ingresa con redes sociales</span>
+          </div>
+
+          <div class="social-auth-container">
+            <button type="button" class="social-btn google-btn" (click)="iniciarSesionGoogle()">
+              <ion-icon name="logo-google"></ion-icon>
+              <span>Continuar con Google</span>
+            </button>
+            <button type="button" class="social-btn facebook-btn" (click)="iniciarSesionFacebook()">
+              <ion-icon name="logo-facebook"></ion-icon>
+              <span>Continuar con Facebook</span>
+            </button>
+          </div>
+
+          <div class="jwt-security-pill">
+            <ion-icon name="key-outline"></ion-icon>
+            <span>Sesión protegida con <strong>Tokens JWT (HS256)</strong></span>
+          </div>
+
           <div class="divider">
             <span>o prueba al instante</span>
           </div>

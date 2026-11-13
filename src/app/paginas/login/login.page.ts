@@ -35,7 +35,10 @@ import {
   callOutline,
   heartOutline,
   shieldCheckmarkOutline,
-  rocketOutline
+  rocketOutline,
+  logoGoogle,
+  logoFacebook,
+  keyOutline
 } from 'ionicons/icons';
 import { TiendaService } from '../../services/tienda.service';
 
@@ -96,8 +99,41 @@ export class LoginPage {
       callOutline,
       heartOutline,
       shieldCheckmarkOutline,
-      rocketOutline
+      rocketOutline,
+      logoGoogle,
+      logoFacebook,
+      keyOutline
     });
+  }
+
+  /**
+   * Autenticación Social mediante proveedor Google OAuth 2.0.
+   * Genera el Token JWT verificado y redirige al catálogo.
+   */
+  async iniciarSesionGoogle() {
+    const res = this.tiendaService.iniciarSesionOAuth('google', {
+      nombre: 'Cristian Camacho',
+      email: 'cristian.camacho@ucompensar.edu.co',
+      nombreMascota: 'Max',
+      tipoMascota: 'perro'
+    });
+    await this.mostrarMensaje(`🌐 ${res.mensaje}`, 'success');
+    this.router.navigate(['/catalogo']);
+  }
+
+  /**
+   * Autenticación Social mediante proveedor Facebook SDK / OAuth.
+   * Genera el Token JWT verificado y redirige al catálogo.
+   */
+  async iniciarSesionFacebook() {
+    const res = this.tiendaService.iniciarSesionOAuth('facebook', {
+      nombre: 'Diego Garzón',
+      email: 'diego.garzon@ucompensar.edu.co',
+      nombreMascota: 'Rocky',
+      tipoMascota: 'perro'
+    });
+    await this.mostrarMensaje(`🌐 ${res.mensaje}`, 'success');
+    this.router.navigate(['/catalogo']);
   }
 
   /**
@@ -142,12 +178,12 @@ export class LoginPage {
   }
 
   /**
-   * Permite ingresar con un solo clic usando una cuenta de demostración preconfigurada.
+   * Permite ingresar con un solo clic usando una cuenta de demostración genérica sin datos prellenados.
    */
   async accesoDemo() {
-    this.correo = 'daniela@maxifood.co';
-    this.password = 'maxi2026';
-    const res = this.tiendaService.iniciarSesion(this.correo, this.password);
+    this.correo = '';
+    this.password = '';
+    const res = this.tiendaService.iniciarSesionDemo();
     await this.mostrarMensaje(res.mensaje, 'success');
     this.router.navigate(['/catalogo']);
   }

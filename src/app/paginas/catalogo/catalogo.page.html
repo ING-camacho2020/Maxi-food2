@@ -9,6 +9,15 @@
           <span class="app-name">Maxi-Food</span>
           <span class="user-greeting" *ngIf="tienda.usuarioActual">
             Hola, {{ tienda.usuarioActual.nombre }} • 🐾 {{ tienda.usuarioActual.nombreMascota }}
+            <span class="provider-tag" *ngIf="tienda.usuarioActual.proveedor === 'google'">
+              <ion-icon name="logo-google"></ion-icon> Google
+            </span>
+            <span class="provider-tag" *ngIf="tienda.usuarioActual.proveedor === 'facebook'">
+              <ion-icon name="logo-facebook"></ion-icon> Facebook
+            </span>
+            <span class="provider-tag jwt-tag" *ngIf="tienda.usuarioActual.proveedor === 'local'">
+              <ion-icon name="key-outline"></ion-icon> JWT
+            </span>
           </span>
           <span class="user-greeting" *ngIf="!tienda.usuarioActual">
             Tienda de Nutrición Animal
@@ -75,6 +84,27 @@
       </div>
       <div class="promo-visual">
         <span class="pet-emoji">🐶🐱</span>
+      </div>
+    </div>
+
+    <!-- Widget de Clima en Tiempo Real & Nutrición Inteligente (API Terceros: Open-Meteo) -->
+    <div class="weather-widget-card" *ngIf="climaMascota">
+      <div class="weather-header">
+        <div class="weather-temp">
+          <span class="weather-icon">{{ climaMascota.icono }}</span>
+          <div>
+            <strong>{{ climaMascota.temperatura }}°C</strong> • {{ climaMascota.condicion }}
+            <small>{{ climaMascota.ciudad }} (Humedad: {{ climaMascota.humedad }}%)</small>
+          </div>
+        </div>
+        <ion-chip class="api-tag">
+          <ion-icon name="cloudy-outline"></ion-icon>
+          <ion-label>API Clima</ion-label>
+        </ion-chip>
+      </div>
+      <div class="weather-advice">
+        <span class="advice-badge">Consejo Veterinario:</span>
+        <p>{{ climaMascota.consejoNutricional }}</p>
       </div>
     </div>
 
@@ -602,10 +632,74 @@
             </div>
             <h3>{{ perfilEdit.nombre }}</h3>
             <p>{{ perfilEdit.correo }}</p>
-            <ion-chip color="primary">
-              <ion-icon name="paw-outline"></ion-icon>
-              <ion-label>Mascota: {{ perfilEdit.nombreMascota }}</ion-label>
-            </ion-chip>
+            <div class="profile-badges-row">
+              <ion-chip color="primary">
+                <ion-icon name="paw-outline"></ion-icon>
+                <ion-label>Mascota: {{ perfilEdit.nombreMascota }} ({{ perfilEdit.tipoMascota }})</ion-label>
+              </ion-chip>
+              <ion-chip color="secondary" *ngIf="perfilEdit.proveedor === 'google'">
+                <ion-icon name="logo-google"></ion-icon>
+                <ion-label>Google OAuth</ion-label>
+              </ion-chip>
+              <ion-chip color="primary" *ngIf="perfilEdit.proveedor === 'facebook'">
+                <ion-icon name="logo-facebook"></ion-icon>
+                <ion-label>Facebook SDK</ion-label>
+              </ion-chip>
+              <ion-chip color="success" *ngIf="!perfilEdit.proveedor || perfilEdit.proveedor === 'local'">
+                <ion-icon name="key-outline"></ion-icon>
+                <ion-label>JWT Token Activo</ion-label>
+              </ion-chip>
+            </div>
+          </div>
+
+          <!-- MÓDULO DE SEGURIDAD Y TOKEN JWT (RFC 7519) -->
+          <div class="jwt-inspection-card">
+            <div class="jwt-card-header" (click)="mostrarSeccionJWT = !mostrarSeccionJWT">
+              <div class="jwt-card-title">
+                <ion-icon name="key-outline"></ion-icon>
+                <div>
+                  <strong>Arquitectura de Seguridad: Token JWT</strong>
+                  <small>Estándar RFC 7519 • Firma HS256</small>
+                </div>
+              </div>
+              <ion-badge color="success">{{ mostrarSeccionJWT ? 'Ocultar ▲' : 'Inspeccionar ▼' }}</ion-badge>
+            </div>
+
+            <div class="jwt-card-body" *ngIf="mostrarSeccionJWT && jwtAuditoria">
+              <div class="jwt-metrics-grid">
+                <div class="jwt-metric">
+                  <span class="metric-label">Subject (sub):</span>
+                  <strong>{{ jwtAuditoria.payload.sub }}</strong>
+                </div>
+                <div class="jwt-metric">
+                  <span class="metric-label">Rol:</span>
+                  <strong>{{ jwtAuditoria.payload.rol }}</strong>
+                </div>
+                <div class="jwt-metric">
+                  <span class="metric-label">Proveedor:</span>
+                  <strong>{{ jwtAuditoria.payload.proveedor }}</strong>
+                </div>
+                <div class="jwt-metric">
+                  <span class="metric-label">Expiración (Vigencia):</span>
+                  <strong class="exp-time">⏳ {{ jwtAuditoria.tiempoRestanteTexto }}</strong>
+                </div>
+              </div>
+
+              <div class="jwt-token-box">
+                <div class="token-box-header">
+                  <span>Token JWT Codificado:</span>
+                  <ion-button size="small" fill="clear" color="primary" (click)="copiarTokenJWT()">
+                    <ion-icon name="copy-outline" slot="start"></ion-icon> Copiar para jwt.io
+                  </ion-button>
+                </div>
+                <div class="raw-token-text">{{ jwtAuditoria.raw }}</div>
+              </div>
+
+              <div class="jwt-claims-section">
+                <span>Payload Decodificado (Claims JSON):</span>
+                <pre class="claims-json">{{ jwtAuditoria.payload | json }}</pre>
+              </div>
+            </div>
           </div>
 
           <div class="profile-form-card">
@@ -643,14 +737,14 @@
             </ion-button>
           </div>
 
-          <!-- Historial de Pedidos -->
+          <!-- Historial de Pedidos Independiente por Cliente -->
           <div class="orders-history">
-            <h4>Mis Pedidos Recientes ({{ tienda.pedidos.length }})</h4>
-            <p class="no-orders" *ngIf="tienda.pedidos.length === 0">
-              Aún no has realizado pedidos. ¡Tu mascota espera su primer paquete!
+            <h4>Mis Pedidos Recientes ({{ tienda.pedidosUsuarioActual.length }})</h4>
+            <p class="no-orders" *ngIf="tienda.pedidosUsuarioActual.length === 0">
+              Aún no has realizado pedidos con esta cuenta. ¡Tu mascota espera su primer paquete!
             </p>
 
-            <div class="order-card" *ngFor="let ped of tienda.pedidos">
+            <div class="order-card" *ngFor="let ped of tienda.pedidosUsuarioActual">
               <div class="order-top">
                 <strong>Pedido {{ ped.id }}</strong>
                 <span class="order-status">{{ ped.estado }}</span>

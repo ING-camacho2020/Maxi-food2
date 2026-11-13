@@ -6,6 +6,7 @@
  */
 
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -15,13 +16,14 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    // Pantalla de autenticación y registro de usuarios/mascotas
+    // Pantalla de autenticación y registro de usuarios/mascotas (con soporte JWT y OAuth)
     path: 'login',
     loadComponent: () => import('./paginas/login/login.page').then((m) => m.LoginPage),
   },
   {
-    // Pantalla principal de la tienda: catálogo de productos, carrito, detalle y perfil
+    // Pantalla principal de la tienda: catálogo protegido mediante Token JWT (AuthGuard)
     path: 'catalogo',
+    canActivate: [authGuard],
     loadComponent: () => import('./paginas/catalogo/catalogo.page').then((m) => m.CatalogoPage),
   },
   {

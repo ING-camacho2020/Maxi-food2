@@ -9,6 +9,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { AuthService, JWTPayload } from './auth.service';
 
 /**
  * Representa una presentación o tamaño de empaque disponible para un producto
@@ -69,6 +70,8 @@ export interface Usuario {
   tipoMascota: 'perro' | 'gato' | 'ambos';
   direccion: string;
   telefono: string;
+  proveedor?: 'local' | 'google' | 'facebook';
+  fotoUrl?: string;
 }
 
 /**
@@ -76,6 +79,7 @@ export interface Usuario {
  */
 export interface Pedido {
   id: string;
+  usuarioCorreo: string;
   fecha: string;
   items: ItemCarrito[];
   total: number;
@@ -285,19 +289,34 @@ export class TiendaService {
   cuponAplicado: string = '';
   porcentajeDescuentoCupon: number = 0;
 
-  constructor() {
+  constructor(public authService: AuthService) {
     // Al instanciar el servicio se recupera el estado previo guardado en el navegador
     this.cargarEstado();
   }
 
   /**
-   * Recupera desde `localStorage` el usuario activo, el carrito, los favoritos y los pedidos.
+   * Recupera desde `localStorage` el usuario activo (o desde el Token JWT), el carrito, los favoritos y los pedidos.
    */
   private cargarEstado() {
     try {
       const userStr = localStorage.getItem(this.STORAGE_USER_KEY);
       if (userStr) {
         this.usuarioActual = JSON.parse(userStr);
+      } else if (this.authService.estaAutenticado()) {
+        const payload = this.authService.obtenerPayload();
+        if (payload) {
+          this.usuarioActual = {
+            nombre: payload.nombre,
+            correo: payload.email,
+            nombreMascota: payload.nombreMascota,
+            tipoMascota: payload.tipoMascota,
+            direccion: payload.direccion || '',
+            telefono: payload.telefono || '',
+            proveedor: payload.proveedor,
+            fotoUrl: payload.fotoUrl
+          };
+          localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+        }
       }
 
       const cartStr = localStorage.getItem(this.STORAGE_CART_KEY);
@@ -350,60 +369,117 @@ export class TiendaService {
   }
 
   /**
-   * Valida las credenciales del usuario. Si el correo ya fue registrado verifica su contraseña;
-   * si es un correo nuevo, crea una sesión rápida con el nombre extraído del correo.
+   * Valida las credenciales del usuario, emite el Token JWT mediante `AuthService`
+   * y sincroniza la sesión activa en memoria y localStorage.
    */
-  iniciarSesion(correo: string, password: string): { ok: boolean; mensaje: string } {
-    const correoLimpio = correo.trim().toLowerCase();
-    const usuarios = this.obtenerUsuariosRegistrados();
-    const existente = usuarios.find(u => u.correo.toLowerCase() === correoLimpio);
-
-    if (existente) {
-      if (existente.password && existente.password !== password) {
-        return { ok: false, mensaje: 'La contraseña ingresada no coincide con la cuenta registrada.' };
-      }
-      this.usuarioActual = existente;
-    } else {
-      const nombreBase = correoLimpio.split('@')[0] || 'Cliente Maxi';
-      const nombreFormateado = nombreBase.charAt(0).toUpperCase() + nombreBase.slice(1);
-      this.usuarioActual = {
-        nombre: nombreFormateado,
-        correo: correoLimpio,
-        nombreMascota: 'Max',
-        tipoMascota: 'perro',
-        direccion: 'Calle 100 # 15-20, Bogotá',
-        telefono: '300 123 4567'
-      };
+  iniciarSesion(correo: string, password: string): { ok: boolean; mensaje: string; token?: string } {
+    const resAuth = this.authService.loginLocal(correo, password);
+    if (!resAuth.ok) {
+      return resAuth;
     }
 
-    localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
-    return { ok: true, mensaje: `¡Bienvenido de nuevo, ${this.usuarioActual.nombre}!` };
+    const payload = this.authService.obtenerPayload();
+    if (payload) {
+      this.usuarioActual = {
+        nombre: payload.nombre,
+        correo: payload.email,
+        nombreMascota: payload.nombreMascota,
+        tipoMascota: payload.tipoMascota,
+        direccion: payload.direccion || 'Calle 100 # 15-20, Bogotá',
+        telefono: payload.telefono || '300 123 4567',
+        proveedor: payload.proveedor,
+        fotoUrl: payload.fotoUrl
+      };
+      localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+    }
+
+    return {
+      ok: true,
+      mensaje: `¡Bienvenido de nuevo, ${this.usuarioActual?.nombre}! (Token JWT emitido)`,
+      token: resAuth.token
+    };
   }
 
   /**
-   * Registra un nuevo usuario junto con los datos de su mascota y lo deja autenticado.
+   * Registra un nuevo usuario en la base de datos local y emite su Token JWT de bienvenida.
    */
-  registrarUsuario(nuevo: Usuario): { ok: boolean; mensaje: string } {
-    const correoLimpio = nuevo.correo.trim().toLowerCase();
-    const usuarios = this.obtenerUsuariosRegistrados();
+  registrarUsuario(nuevo: Usuario): { ok: boolean; mensaje: string; token?: string } {
+    const resAuth = this.authService.registrarUsuario({
+      nombre: nuevo.nombre,
+      correo: nuevo.correo,
+      password: nuevo.password,
+      nombreMascota: nuevo.nombreMascota,
+      tipoMascota: nuevo.tipoMascota,
+      direccion: nuevo.direccion,
+      telefono: nuevo.telefono
+    });
 
-    const idx = usuarios.findIndex(u => u.correo.toLowerCase() === correoLimpio);
-    const usuarioGuardado: Usuario = {
-      ...nuevo,
-      correo: correoLimpio
-    };
-
-    if (idx >= 0) {
-      usuarios[idx] = usuarioGuardado;
-    } else {
-      usuarios.push(usuarioGuardado);
+    const payload = this.authService.obtenerPayload();
+    if (payload) {
+      this.usuarioActual = {
+        nombre: payload.nombre,
+        correo: payload.email,
+        nombreMascota: payload.nombreMascota,
+        tipoMascota: payload.tipoMascota,
+        direccion: payload.direccion || '',
+        telefono: payload.telefono || '',
+        proveedor: payload.proveedor,
+        fotoUrl: payload.fotoUrl
+      };
+      localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
     }
 
-    localStorage.setItem(this.STORAGE_USERS_LIST_KEY, JSON.stringify(usuarios));
-    this.usuarioActual = usuarioGuardado;
-    localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+    return {
+      ok: true,
+      mensaje: `¡Cuenta creada exitosamente! Bienvenido(a) ${this.usuarioActual?.nombre} (Token JWT emitido)`,
+      token: resAuth.token
+    };
+  }
 
-    return { ok: true, mensaje: `¡Cuenta creada con éxito! Bienvenido(a) ${usuarioGuardado.nombre}` };
+  /**
+   * Inicia sesión mediante proveedor Social OAuth (Google o Facebook) emitiendo Token JWT.
+   */
+  iniciarSesionOAuth(proveedor: 'google' | 'facebook', datosMock?: Partial<JWTPayload>): { ok: boolean; mensaje: string; token: string } {
+    const resAuth = this.authService.loginOAuth(proveedor, datosMock);
+    const payload = this.authService.obtenerPayload();
+    if (payload) {
+      this.usuarioActual = {
+        nombre: payload.nombre,
+        correo: payload.email,
+        nombreMascota: payload.nombreMascota,
+        tipoMascota: payload.tipoMascota,
+        direccion: payload.direccion || 'Bogotá D.C., Colombia',
+        telefono: payload.telefono || '300 000 0000',
+        proveedor: payload.proveedor,
+        fotoUrl: payload.fotoUrl
+      };
+      localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+    }
+
+    return resAuth;
+  }
+
+  /**
+   * Inicia sesión con una cuenta de prueba genérica (Usuario Demo) con datos en blanco,
+   * sin datos prellenados de ningún cliente real.
+   */
+  iniciarSesionDemo(): { ok: boolean; mensaje: string; token: string } {
+    const resAuth = this.authService.loginDemo();
+    this.usuarioActual = {
+      nombre: 'Usuario Demo',
+      correo: 'demo@maxifood.co',
+      nombreMascota: '',
+      tipoMascota: 'perro',
+      direccion: '',
+      telefono: '',
+      proveedor: 'local'
+    };
+    localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+    return {
+      ok: true,
+      mensaje: '¡Acceso Demo activado como usuario de prueba! Token JWT emitido.',
+      token: resAuth.token
+    };
   }
 
   /**
@@ -423,11 +499,13 @@ export class TiendaService {
   }
 
   /**
-   * Cierra la sesión activa eliminando el usuario actual de `localStorage`.
+   * Cierra la sesión activa eliminando el usuario actual, limpiando el carrito y revocando el Token JWT.
    */
   cerrarSesion() {
     this.usuarioActual = null;
+    this.vaciarCarrito();
     localStorage.removeItem(this.STORAGE_USER_KEY);
+    this.authService.cerrarSesion();
   }
 
   /**
@@ -575,11 +653,24 @@ export class TiendaService {
   }
 
   /**
-   * Genera un nuevo pedido con código único, lo guarda en el historial y vacía el carrito.
+   * Retorna exclusivamente el historial de pedidos pertenecientes al cliente que tiene la sesión activa.
+   * Filtra por correo electrónico para garantizar independencia de datos entre usuarios.
+   */
+  get pedidosUsuarioActual(): Pedido[] {
+    if (!this.usuarioActual || !this.usuarioActual.correo) return [];
+    const correoActivo = this.usuarioActual.correo.trim().toLowerCase();
+    return this.pedidos.filter(p => p.usuarioCorreo && p.usuarioCorreo.toLowerCase() === correoActivo);
+  }
+
+  /**
+   * Genera un nuevo pedido con código único, lo asocia al correo del cliente activo,
+   * lo guarda en el historial y vacía el carrito.
    */
   crearPedido(metodoPago: string, direccion: string): Pedido {
+    const correoActual = (this.usuarioActual?.correo || 'demo@maxifood.co').trim().toLowerCase();
     const nuevoPedido: Pedido = {
       id: 'MF-' + Math.floor(100000 + Math.random() * 900000),
+      usuarioCorreo: correoActual,
       fecha: new Date().toLocaleDateString('es-CO', {
         day: '2-digit',
         month: 'short',

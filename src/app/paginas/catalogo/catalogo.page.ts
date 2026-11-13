@@ -9,7 +9,7 @@
  * 5. El modal de perfil de usuario/mascota e historial de pedidos.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -63,9 +63,20 @@ import {
   eyeOutline,
   nutritionOutline,
   shieldCheckmarkOutline,
-  timeOutline
+  timeOutline,
+  logoGoogle,
+  logoFacebook,
+  keyOutline,
+  sunnyOutline,
+  rainyOutline,
+  cloudyOutline,
+  copyOutline,
+  shieldCheckmark,
+  cubeOutline
 } from 'ionicons/icons';
 import { TiendaService, Producto, Usuario } from '../../services/tienda.service';
+import { AuthService, JWTDecodificado } from '../../services/auth.service';
+import { TercerosService, ClimaMascota } from '../../services/terceros.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -100,7 +111,7 @@ import { TiendaService, Producto, Usuario } from '../../services/tienda.service'
     IonFooter
   ]
 })
-export class CatalogoPage implements OnInit {
+export class CatalogoPage implements OnInit, OnDestroy {
   // Lista de productos que se renderiza actualmente en la cuadrícula tras aplicar filtros y orden
   productosFiltrados: Producto[] = [];
 
@@ -131,8 +142,19 @@ export class CatalogoPage implements OnInit {
     telefono: ''
   };
 
+  // --- APIs de Terceros y Arquitectura JWT ---
+  climaMascota: ClimaMascota | null = null;
+  jwtAuditoria: JWTDecodificado | null = null;
+  ultimoPedidoConfirmado: any = null;
+  mostrarSeccionJWT: boolean = false;
+
+  // Temporizador para cuenta regresiva en vivo de expiración del Token JWT (2 minutos)
+  private intervaloJWT: any = null;
+
   constructor(
     public tienda: TiendaService,
+    public authService: AuthService,
+    public terceros: TercerosService,
     private router: Router,
     private toastCtrl: ToastController
   ) {
@@ -160,35 +182,67 @@ export class CatalogoPage implements OnInit {
       eyeOutline,
       nutritionOutline,
       shieldCheckmarkOutline,
-      timeOutline
+      timeOutline,
+      logoGoogle,
+      logoFacebook,
+      keyOutline,
+      sunnyOutline,
+      rainyOutline,
+      cloudyOutline,
+      copyOutline,
+      shieldCheckmark,
+      cubeOutline
     });
   }
 
   /**
-   * Ciclo de vida inicial: carga la lista inicial de productos y sincroniza los datos del usuario.
+   * Ciclo de vida inicial: carga productos, sincroniza sesión, consulta la API de Clima
+   * e inicia la cuenta regresiva en tiempo real del Token JWT (2 minutos de vigencia).
    */
-  ngOnInit() {
+  async ngOnInit() {
     this.aplicarFiltros();
     this.sincronizarDatosUsuario();
+    this.actualizarAuditoriaJWT();
+    await this.cargarClimaEnTiempoReal();
+
+    // Actualiza la cuenta regresiva del token cada segundo y comprueba si expiró
+    this.intervaloJWT = setInterval(() => {
+      this.actualizarAuditoriaJWT();
+      if (!this.authService.estaAutenticado()) {
+        clearInterval(this.intervaloJWT);
+        this.intervaloJWT = null;
+        this.mostrarToast('⏳ Tu Token JWT (2 min) ha expirado. Por favor inicia sesión nuevamente.', 'warning', 4000);
+        this.router.navigate(['/login']);
+      }
+    }, 1000);
   }
 
   /**
-   * Copia los datos del usuario autenticado (o valores por defecto de invitado)
-   * hacia los formularios de dirección de envío y edición de perfil.
+   * Limpia el temporizador al salir de la pantalla.
+   */
+  ngOnDestroy() {
+    if (this.intervaloJWT) {
+      clearInterval(this.intervaloJWT);
+      this.intervaloJWT = null;
+    }
+  }
+
+  /**
+   * Copia los datos del usuario autenticado hacia los formularios de dirección de envío y edición de perfil.
    */
   sincronizarDatosUsuario() {
     if (this.tienda.usuarioActual) {
-      this.direccionEntregaInput = this.tienda.usuarioActual.direccion || 'Calle 100 # 15-20, Bogotá';
+      this.direccionEntregaInput = this.tienda.usuarioActual.direccion || '';
       this.perfilEdit = { ...this.tienda.usuarioActual };
     } else {
-      this.direccionEntregaInput = 'Calle 100 # 15-20, Bogotá';
+      this.direccionEntregaInput = '';
       this.perfilEdit = {
-        nombre: 'Invitado Maxi-Food',
-        correo: 'invitado@maxifood.co',
-        nombreMascota: 'Max',
+        nombre: 'Usuario Demo',
+        correo: 'demo@maxifood.co',
+        nombreMascota: '',
         tipoMascota: 'perro',
-        direccion: 'Calle 100 # 15-20, Bogotá',
-        telefono: '300 123 4567'
+        direccion: '',
+        telefono: ''
       };
     }
   }
@@ -357,6 +411,42 @@ export class CatalogoPage implements OnInit {
   }
 
   /**
+   * Consulta la API pública de Open-Meteo para obtener temperatura y generar el consejo nutricional.
+   */
+  async cargarClimaEnTiempoReal() {
+    try {
+      this.climaMascota = await this.terceros.consultarClimaYConsejo();
+    } catch (e) {
+      console.warn('Error al obtener clima:', e);
+    }
+  }
+
+  /**
+   * Actualiza los datos de inspección del Token JWT para auditoría técnica.
+   */
+  actualizarAuditoriaJWT() {
+    this.jwtAuditoria = this.authService.decodificarToken();
+  }
+
+  /**
+   * Copia el Token JWT al portapapeles del dispositivo para que el docente o evaluador
+   * pueda verificarlo directamente en herramientas como jwt.io.
+   */
+  async copiarTokenJWT() {
+    const token = this.jwtAuditoria?.raw || this.authService.obtenerToken();
+    if (!token) {
+      await this.mostrarToast('No hay Token JWT activo en este momento.', 'warning');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(token);
+      await this.mostrarToast('📋 ¡Token JWT copiado! Puedes pegarlo en https://jwt.io', 'success', 3000);
+    } catch {
+      await this.mostrarToast(`Token: ${token.substring(0, 24)}...`, 'medium', 3000);
+    }
+  }
+
+  /**
    * Procesa la compra actual, registra el pedido en el historial y abre el modal de perfil para mostrarlo.
    */
   async confirmarPedido() {
@@ -366,6 +456,7 @@ export class CatalogoPage implements OnInit {
       this.metodoPagoSeleccionado,
       this.direccionEntregaInput
     );
+    this.ultimoPedidoConfirmado = pedido;
     this.mostrarModalCarrito = false;
     await this.mostrarToast(
       `🎉 ¡Pedido ${pedido.id} confirmado! Total: $${pedido.total.toLocaleString('es-CO')} COP`,
