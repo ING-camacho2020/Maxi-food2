@@ -51,6 +51,19 @@ Galería de Evidencias
 
 ---------------------------------------------------------------------------------------------------------------------------
 🍎 IOS
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 52 PM" src="https://github.com/user-attachments/assets/ce94ec5f-9d10-4009-84f2-b0105b0c67f7" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 53 PM (1)" src="https://github.com/user-attachments/assets/7beeb8db-3b07-4ba3-a3d4-e875e43e4017" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 53 PM (2)" src="https://github.com/user-attachments/assets/4c74993f-b3bf-4307-b8ad-1a0c2b6f9014" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 53 PM (3)" src="https://github.com/user-attachments/assets/60fffe55-cb86-4d6d-9284-44cf9787aa1c" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 54 PM (1)" src="https://github.com/user-attachments/assets/a67790c8-b5d9-4882-8d48-a8cc7191d955" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 54 PM (2)" src="https://github.com/user-attachments/assets/a7c86bf1-b89b-47fb-a8d0-7886898e254d" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 54 PM (3)" src="https://github.com/user-attachments/assets/cf8c61c5-3c9d-4f86-9f0f-12b4dd5b7d25" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 54 PM" src="https://github.com/user-attachments/assets/007ae995-d52d-4cb8-96d4-e8fce2b39c01" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 55 PM (1)" src="https://github.com/user-attachments/assets/d2397dd1-c82f-4adf-ac88-fbec98ab895b" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 55 PM (2)" src="https://github.com/user-attachments/assets/1fa188d6-e7b1-490f-8669-8c724ee84509" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 55 PM (3)" src="https://github.com/user-attachments/assets/b8c01875-cbbb-4541-9ad5-365f3625b63a" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 55 PM (4)" src="https://github.com/user-attachments/assets/77d15bef-1a08-4966-8838-1402071f40c9" />
+<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 55 PM" src="https://github.com/user-attachments/assets/b311c62d-5d89-46bd-857f-f2b1cd914b3c" />
 
 ---------------------------------------------------------------------------------------------------------------------------
 🚀 Instrucciones de Despliegue y Ejecución
