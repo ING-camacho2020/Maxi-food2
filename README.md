@@ -29,14 +29,14 @@ Prerrequisitos
 
 Paso a Paso
 1. **Clonar el repositorio:**
-* ** bash
+* bash
 * ** Instalar paquetes y dependencias:
-* ** https://github.com/ING-camacho2020/Maxi-food2.git
-* ** Bash
-* ** npm install
+* https://github.com/ING-camacho2020/Maxi-food2.git
+* Bash
+* npm install
 * ** Compilar la aplicación web (Ionic):
-* ** Bash
-* ** ionic build
+* Bash
+* ionic build
 
 
 
