@@ -33,7 +33,7 @@ Galería de Evidencias
 ---------------------------------------------------------------------------------------------------------------------------
 🤖 ANDROID
 
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM" src="https://github.com/user-attachments/assets/98af735e-c9ce-466d-a3e0-e26a29294d7d" />
+<img width="738" height="492" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM" src="https://github.com/user-attachments/assets/724779c1-01d6-4839-94a5-04dc700fd62d" />
 <img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (1)" src="https://github.com/user-attachments/assets/454262c6-c561-4188-bf21-7cf054d94812" />
 <img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (2)" src="https://github.com/user-attachments/assets/a3e6a283-899d-46b4-9b4b-2309a5dd181c" />
 <img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (3)" src="https://github.com/user-attachments/assets/9bedbba6-1f8c-441b-b1cf-df578d7a451e" />
@@ -49,8 +49,10 @@ Galería de Evidencias
 <img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 03 PM" src="https://github.com/user-attachments/assets/b7b17f4d-485a-41f3-8153-800c4bdd397c" />
 
 ---------------------------------------------------------------------------------------------------------------------------
+
 🍎 IOS
-<img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 52 PM" src="https://github.com/user-attachments/assets/ce94ec5f-9d10-4009-84f2-b0105b0c67f7" />
+
+<img width="739" height="337" alt="WhatsApp Image 2026-11-13 at 12 44 52 PM" src="https://github.com/user-attachments/assets/e9f64a6a-39a5-42b4-ad84-faff77f46773" />
 <img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 53 PM (1)" src="https://github.com/user-attachments/assets/7beeb8db-3b07-4ba3-a3d4-e875e43e4017" />
 <img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 53 PM (2)" src="https://github.com/user-attachments/assets/4c74993f-b3bf-4307-b8ad-1a0c2b6f9014" />
 <img width="739" height="1600" alt="WhatsApp Image 2026-11-13 at 12 44 53 PM (3)" src="https://github.com/user-attachments/assets/60fffe55-cb86-4d6d-9284-44cf9787aa1c" />
