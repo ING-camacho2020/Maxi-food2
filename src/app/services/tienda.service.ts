@@ -289,9 +289,59 @@ export class TiendaService {
   cuponAplicado: string = '';
   porcentajeDescuentoCupon: number = 0;
 
+  // Memoria de respaldo cuando localStorage no está disponible
+  private memoryFallback = new Map<string, string>();
+
   constructor(public authService: AuthService) {
     // Al instanciar el servicio se recupera el estado previo guardado en el navegador
     this.cargarEstado();
+  }
+
+  /**
+   * Obtiene de forma segura un valor desde localStorage o la memoria interna.
+   */
+  private safeGet(key: string): string | null {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
+        return window.localStorage.getItem(key);
+      }
+      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.getItem === 'function') {
+        return localStorage.getItem(key);
+      }
+    } catch {}
+    return this.memoryFallback.get(key) ?? null;
+  }
+
+  /**
+   * Guarda de forma segura un valor en localStorage y en memoria interna.
+   */
+  private safeSet(key: string, value: string): void {
+    this.memoryFallback.set(key, value);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.setItem === 'function') {
+        window.localStorage.setItem(key, value);
+        return;
+      }
+      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.setItem === 'function') {
+        localStorage.setItem(key, value);
+      }
+    } catch {}
+  }
+
+  /**
+   * Elimina de forma segura un valor de localStorage y de memoria interna.
+   */
+  private safeRemove(key: string): void {
+    this.memoryFallback.delete(key);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.removeItem === 'function') {
+        window.localStorage.removeItem(key);
+        return;
+      }
+      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.removeItem === 'function') {
+        localStorage.removeItem(key);
+      }
+    } catch {}
   }
 
   /**
@@ -299,7 +349,7 @@ export class TiendaService {
    */
   private cargarEstado() {
     try {
-      const userStr = localStorage.getItem(this.STORAGE_USER_KEY);
+      const userStr = this.safeGet(this.STORAGE_USER_KEY);
       if (userStr) {
         this.usuarioActual = JSON.parse(userStr);
       } else if (this.authService.estaAutenticado()) {
@@ -315,21 +365,21 @@ export class TiendaService {
             proveedor: payload.proveedor,
             fotoUrl: payload.fotoUrl
           };
-          localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+          this.safeSet(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
         }
       }
 
-      const cartStr = localStorage.getItem(this.STORAGE_CART_KEY);
+      const cartStr = this.safeGet(this.STORAGE_CART_KEY);
       if (cartStr) {
         this.carrito = JSON.parse(cartStr);
       }
 
-      const favStr = localStorage.getItem(this.STORAGE_FAV_KEY);
+      const favStr = this.safeGet(this.STORAGE_FAV_KEY);
       if (favStr) {
         this.favoritosIds = JSON.parse(favStr);
       }
 
-      const ordersStr = localStorage.getItem(this.STORAGE_ORDERS_KEY);
+      const ordersStr = this.safeGet(this.STORAGE_ORDERS_KEY);
       if (ordersStr) {
         this.pedidos = JSON.parse(ordersStr);
       }
@@ -343,7 +393,7 @@ export class TiendaService {
    */
   private guardarCarrito() {
     try {
-      localStorage.setItem(this.STORAGE_CART_KEY, JSON.stringify(this.carrito));
+      this.safeSet(this.STORAGE_CART_KEY, JSON.stringify(this.carrito));
     } catch {}
   }
 
@@ -352,7 +402,7 @@ export class TiendaService {
    */
   private guardarFavoritos() {
     try {
-      localStorage.setItem(this.STORAGE_FAV_KEY, JSON.stringify(this.favoritosIds));
+      this.safeSet(this.STORAGE_FAV_KEY, JSON.stringify(this.favoritosIds));
     } catch {}
   }
 
@@ -361,7 +411,7 @@ export class TiendaService {
    */
   private obtenerUsuariosRegistrados(): Usuario[] {
     try {
-      const raw = localStorage.getItem(this.STORAGE_USERS_LIST_KEY);
+      const raw = this.safeGet(this.STORAGE_USERS_LIST_KEY);
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
@@ -390,7 +440,7 @@ export class TiendaService {
         proveedor: payload.proveedor,
         fotoUrl: payload.fotoUrl
       };
-      localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+      this.safeSet(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
     }
 
     return {
@@ -426,7 +476,7 @@ export class TiendaService {
         proveedor: payload.proveedor,
         fotoUrl: payload.fotoUrl
       };
-      localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+      this.safeSet(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
     }
 
     return {
@@ -453,7 +503,7 @@ export class TiendaService {
         proveedor: payload.proveedor,
         fotoUrl: payload.fotoUrl
       };
-      localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+      this.safeSet(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
     }
 
     return resAuth;
@@ -474,7 +524,7 @@ export class TiendaService {
       telefono: '',
       proveedor: 'local'
     };
-    localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+    this.safeSet(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
     return {
       ok: true,
       mensaje: '¡Acceso Demo activado como usuario de prueba! Token JWT emitido.',
@@ -488,13 +538,13 @@ export class TiendaService {
   actualizarPerfil(datos: Partial<Usuario>) {
     if (!this.usuarioActual) return;
     this.usuarioActual = { ...this.usuarioActual, ...datos };
-    localStorage.setItem(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
+    this.safeSet(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
 
     const usuarios = this.obtenerUsuariosRegistrados();
     const idx = usuarios.findIndex(u => u.correo.toLowerCase() === this.usuarioActual!.correo.toLowerCase());
     if (idx >= 0) {
       usuarios[idx] = this.usuarioActual;
-      localStorage.setItem(this.STORAGE_USERS_LIST_KEY, JSON.stringify(usuarios));
+      this.safeSet(this.STORAGE_USERS_LIST_KEY, JSON.stringify(usuarios));
     }
   }
 
@@ -504,7 +554,7 @@ export class TiendaService {
   cerrarSesion() {
     this.usuarioActual = null;
     this.vaciarCarrito();
-    localStorage.removeItem(this.STORAGE_USER_KEY);
+    this.safeRemove(this.STORAGE_USER_KEY);
     this.authService.cerrarSesion();
   }
 
@@ -686,9 +736,7 @@ export class TiendaService {
     };
 
     this.pedidos.unshift(nuevoPedido);
-    try {
-      localStorage.setItem(this.STORAGE_ORDERS_KEY, JSON.stringify(this.pedidos));
-    } catch {}
+    this.safeSet(this.STORAGE_ORDERS_KEY, JSON.stringify(this.pedidos));
 
     this.vaciarCarrito();
     return nuevoPedido;

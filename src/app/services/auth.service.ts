@@ -58,17 +58,73 @@ export class AuthService {
   // Clave secreta para simulación de firma HMAC-SHA256 en cliente (en producción reside en servidor)
   private readonly JWT_SECRET = 'MaxiFood_SuperSecret_SecurityKey_2026_JWT';
 
+  // Memoria auxiliar de respaldo en caso de que localStorage no esté disponible (ej: entorno CI / Node 22 / SSR)
+  private memoryFallback = new Map<string, string>();
+
   // Observable reactivo del estado de autenticación para la UI
-  private authStateSubject = new BehaviorSubject<boolean>(this.estaAutenticado());
+  private authStateSubject = new BehaviorSubject<boolean>(false);
   public authState$: Observable<boolean> = this.authStateSubject.asObservable();
 
   // Observable con los claims decodificados del token actual
-  private userClaimsSubject = new BehaviorSubject<JWTPayload | null>(this.obtenerPayload());
+  private userClaimsSubject = new BehaviorSubject<JWTPayload | null>(null);
   public userClaims$: Observable<JWTPayload | null> = this.userClaimsSubject.asObservable();
 
   constructor() {
-    // Valida la integridad del token al cargar la aplicación
+    // Valida la integridad del token al cargar la aplicación de forma segura
     this.revisarEstadoToken();
+  }
+
+  /**
+   * Obtiene de forma segura un valor desde localStorage o la memoria de respaldo.
+   */
+  private getStorageItem(key: string): string | null {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
+        return window.localStorage.getItem(key);
+      }
+      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.getItem === 'function') {
+        return localStorage.getItem(key);
+      }
+    } catch {
+      // Ignora excepciones si localStorage está deshabilitado
+    }
+    return this.memoryFallback.get(key) ?? null;
+  }
+
+  /**
+   * Guarda de forma segura un valor en localStorage y en la memoria de respaldo.
+   */
+  private setStorageItem(key: string, value: string): void {
+    this.memoryFallback.set(key, value);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.setItem === 'function') {
+        window.localStorage.setItem(key, value);
+        return;
+      }
+      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.setItem === 'function') {
+        localStorage.setItem(key, value);
+      }
+    } catch {
+      // Ignora excepciones si localStorage no está disponible
+    }
+  }
+
+  /**
+   * Elimina de forma segura un valor de localStorage y de la memoria de respaldo.
+   */
+  private removeStorageItem(key: string): void {
+    this.memoryFallback.delete(key);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.removeItem === 'function') {
+        window.localStorage.removeItem(key);
+        return;
+      }
+      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.setItem === 'function') {
+        localStorage.removeItem(key);
+      }
+    } catch {
+      // Ignora excepciones si localStorage no está disponible
+    }
   }
 
   // =========================================================================
@@ -201,17 +257,17 @@ export class AuthService {
    * Guarda el token en localStorage y notifica a los observadores.
    */
   public guardarToken(token: string): void {
-    localStorage.setItem(this.STORAGE_JWT_KEY, token);
+    this.setStorageItem(this.STORAGE_JWT_KEY, token);
     const payload = this.obtenerPayload();
     this.userClaimsSubject.next(payload);
     this.authStateSubject.next(true);
   }
 
   /**
-   * Obtiene el token JWT sin procesar desde localStorage.
+   * Obtiene el token JWT sin procesar desde localStorage o memoria segura.
    */
   public obtenerToken(): string | null {
-    return localStorage.getItem(this.STORAGE_JWT_KEY);
+    return this.getStorageItem(this.STORAGE_JWT_KEY);
   }
 
   /**
@@ -313,7 +369,7 @@ export class AuthService {
     } else {
       usuarios.push(usuarioFinal);
     }
-    localStorage.setItem(this.STORAGE_USERS_KEY, JSON.stringify(usuarios));
+    this.setStorageItem(this.STORAGE_USERS_KEY, JSON.stringify(usuarios));
 
     const token = this.generarToken({
       sub: correoLimpio,
@@ -401,7 +457,7 @@ export class AuthService {
    * Cierra la sesión activa: revoca y elimina el token JWT de localStorage.
    */
   public cerrarSesion(): void {
-    localStorage.removeItem(this.STORAGE_JWT_KEY);
+    this.removeStorageItem(this.STORAGE_JWT_KEY);
     this.userClaimsSubject.next(null);
     this.authStateSubject.next(false);
   }
@@ -411,7 +467,7 @@ export class AuthService {
    */
   private obtenerUsuariosRegistrados(): any[] {
     try {
-      const raw = localStorage.getItem(this.STORAGE_USERS_KEY);
+      const raw = this.getStorageItem(this.STORAGE_USERS_KEY);
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
