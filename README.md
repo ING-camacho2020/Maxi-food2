@@ -3,13 +3,11 @@
 > Plataforma híbrida diseñada para recomendar y gestionar la alimentación ideal de cada mascota según sus características y necesidades específicas).
 
 👥Equipo
-
 Maxi-Food (Aplicación Híbrida de Recomendación y Comercio de Alimentos para Mascotas).
 
 * **Integrantes:**
   * Cristian Camilo Camacho
   * Diego Fernando Garzon
-
 
 🎯Alcance Logrado
 Frente al planteamiento inicial del proyecto, se logró desarrollar e integrar satisfactoriamente una aplicación híbrida multiplataforma (Web y Android) construida bajo el stack **Ionic + Angular + Capacitor** y respaldada por **Node.js**. 
@@ -23,9 +21,7 @@ Galería de Evidencias
 
 
 🚀 Instrucciones de Despliegue y Ejecución
-
-Sigue estos pasos para clonar el repositorio, instalar sus dependencias y ejecutar tanto la versión web como el proyecto nativo en Android:
-
+Sigue estos pasos para clonar el repositorio, instalar sus dependencias y ejecutar 
 Prerrequisitos
 * [Node.js](https://nodejs.org/) (v18 o superior recomendado)
 * [Ionic CLI](https://ionicframework.com/docs/cli) (`npm install -g @ionic/cli`)
@@ -33,7 +29,7 @@ Prerrequisitos
 
 Paso a Paso
 1. **Clonar el repositorio:**
-   ```bash
+bash
 Instalar paquetes y dependencias:
 https://github.com/ING-camacho2020/Maxi-food2.git
 Bash
