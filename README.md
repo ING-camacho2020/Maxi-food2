@@ -30,14 +30,21 @@ Galería de Evidencias
 <img width="1919" height="994" alt="7" src="https://github.com/user-attachments/assets/09e511bd-0a85-4fad-8569-29d1b434e02a" />
 <img width="1918" height="994" alt="8" src="https://github.com/user-attachments/assets/ef014190-2ba1-4ee1-9952-3f453c3279c1" />
 <img width="1919" height="992" alt="9" src="https://github.com/user-attachments/assets/239f43ff-27fd-4f8a-882b-8c7d1b6ed52d" />
-
-
-
+---------------------------------------------------------------------------------------------------------------------------
 🤖 ANDROID
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM" src="https://github.com/user-attachments/assets/b70e6a79-106c-4327-948c-aae4010eaf3e" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (1)" src="https://github.com/user-attachments/assets/fa420f52-01f1-4d93-befd-91f89e6cbd12" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (2)" src="https://github.com/user-attachments/assets/ccde0582-9ee9-415a-bc22-9381aa02f691" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (3)" src="https://github.com/user-attachments/assets/17695231-4b15-46a6-bc3e-4b22672824d2" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (4)" src="https://github.com/user-attachments/assets/9ebfdb04-82b6-4014-80e8-896daca39536" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (1)" src="https://github.com/user-attachments/assets/5f3302a6-c21c-4a7a-89ae-783a80b8b2ef" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (2)" src="https://github.com/user-attachments/assets/9b09ca63-f6f0-4352-bb00-465f96c21d58" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 03 PM" src="https://github.com/user-attachments/assets/0a1776e6-ade7-4930-825b-667a75494814" />
 
-
+---------------------------------------------------------------------------------------------------------------------------
 🍎 IOS
 
+---------------------------------------------------------------------------------------------------------------------------
 🚀 Instrucciones de Despliegue y Ejecución
 Sigue estos pasos para clonar el repositorio, instalar sus dependencias y ejecutar 
 Prerrequisitos
