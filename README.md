@@ -31,15 +31,22 @@ Galería de Evidencias
 <img width="1918" height="994" alt="8" src="https://github.com/user-attachments/assets/ef014190-2ba1-4ee1-9952-3f453c3279c1" />
 <img width="1919" height="992" alt="9" src="https://github.com/user-attachments/assets/239f43ff-27fd-4f8a-882b-8c7d1b6ed52d" />
 ---------------------------------------------------------------------------------------------------------------------------
+
 🤖 ANDROID
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM" src="https://github.com/user-attachments/assets/b70e6a79-106c-4327-948c-aae4010eaf3e" />
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (1)" src="https://github.com/user-attachments/assets/fa420f52-01f1-4d93-befd-91f89e6cbd12" />
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (2)" src="https://github.com/user-attachments/assets/ccde0582-9ee9-415a-bc22-9381aa02f691" />
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (3)" src="https://github.com/user-attachments/assets/17695231-4b15-46a6-bc3e-4b22672824d2" />
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (4)" src="https://github.com/user-attachments/assets/9ebfdb04-82b6-4014-80e8-896daca39536" />
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (1)" src="https://github.com/user-attachments/assets/5f3302a6-c21c-4a7a-89ae-783a80b8b2ef" />
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (2)" src="https://github.com/user-attachments/assets/9b09ca63-f6f0-4352-bb00-465f96c21d58" />
-<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 03 PM" src="https://github.com/user-attachments/assets/0a1776e6-ade7-4930-825b-667a75494814" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM" src="https://github.com/user-attachments/assets/98af735e-c9ce-466d-a3e0-e26a29294d7d" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (1)" src="https://github.com/user-attachments/assets/454262c6-c561-4188-bf21-7cf054d94812" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (2)" src="https://github.com/user-attachments/assets/a3e6a283-899d-46b4-9b4b-2309a5dd181c" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (3)" src="https://github.com/user-attachments/assets/9bedbba6-1f8c-441b-b1cf-df578d7a451e" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (4)" src="https://github.com/user-attachments/assets/fe85496e-d450-4b06-87ec-0bcf1f22666f" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (1)" src="https://github.com/user-attachments/assets/6d26401b-5279-4ddf-91e0-f196b78a0c6a" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (2)" src="https://github.com/user-attachments/assets/c51bf25c-e44e-49c8-8b7b-07acaa6c8125" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (3)" src="https://github.com/user-attachments/assets/d691b1a2-30c1-4c05-be9f-0ecc72900692" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (4)" src="https://github.com/user-attachments/assets/e51f11fd-89a0-4f50-8b4a-1570a2e5c851" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (5)" src="https://github.com/user-attachments/assets/5ac34de7-ed4a-46be-93f6-45c0bc06d1a8" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (6)" src="https://github.com/user-attachments/assets/8197a3a4-d925-49ca-9407-158cf63f58b0" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM (7)" src="https://github.com/user-attachments/assets/49bae212-54fa-4020-b405-e7d6191a16b4" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 02 PM" src="https://github.com/user-attachments/assets/ae54afec-e501-48e9-bc55-4080c38bd3f8" />
+<img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 03 PM" src="https://github.com/user-attachments/assets/b7b17f4d-485a-41f3-8153-800c4bdd397c" />
 
 ---------------------------------------------------------------------------------------------------------------------------
 🍎 IOS
