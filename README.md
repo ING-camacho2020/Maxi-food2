@@ -32,8 +32,8 @@ Galería de Evidencias
 <img width="1918" height="994" alt="8" src="https://github.com/user-attachments/assets/ef014190-2ba1-4ee1-9952-3f453c3279c1" />
 <img width="1919" height="992" alt="9" src="https://github.com/user-attachments/assets/239f43ff-27fd-4f8a-882b-8c7d1b6ed52d" />
 ---------------------------------------------------------------------------------------------------------------------------
-
 🤖 ANDROID
+
 <img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM" src="https://github.com/user-attachments/assets/98af735e-c9ce-466d-a3e0-e26a29294d7d" />
 <img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (1)" src="https://github.com/user-attachments/assets/454262c6-c561-4188-bf21-7cf054d94812" />
 <img width="738" height="1600" alt="WhatsApp Image 2026-11-13 at 1 01 01 PM (2)" src="https://github.com/user-attachments/assets/a3e6a283-899d-46b4-9b4b-2309a5dd181c" />
