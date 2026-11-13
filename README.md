@@ -18,7 +18,25 @@ Se cumplió con el objetivo central de ofrecer un flujo intuitivo para el usuari
 * **Arquitectura Híbrida Eficiente:** Desarrollada en Ionic + JavaScript, permitiendo ejecución nativa móvil en Android/iOS y distribución web.
 
 Galería de Evidencias 
+💻 WEB
+<img width="1919" height="999" alt="1" src="https://github.com/user-attachments/assets/e454b231-3567-4ae6-ab01-fd90f59b0eb2" />
+<img width="1919" height="996" alt="2" src="https://github.com/user-attachments/assets/1b70dcd3-0ff9-48ff-9f62-b4762b779d75" />
+<img width="1919" height="991" alt="3" src="https://github.com/user-attachments/assets/16148e43-446c-47f6-a9a2-a1c10d640f12" />
+<img width="1919" height="953" alt="4" src="https://github.com/user-attachments/assets/011712a1-c554-45f3-9195-646081530f60" />
+<img width="1919" height="993" alt="5" src="https://github.com/user-attachments/assets/ddd8e09e-0299-43d7-919a-bb795aa7caa7" />
+<img width="1919" height="993" alt="5" src="https://github.com/user-attachments/assets/8ab01a41-9599-42b7-9160-e168bee82dd3" />
+<img width="1919" height="989" alt="6 1" src="https://github.com/user-attachments/assets/0cb3542d-502a-426a-897f-4af03776be65" />
+<img width="1919" height="991" alt="6" src="https://github.com/user-attachments/assets/1adf085e-4845-477b-a8a6-90bcd81fc961" />
+<img width="1919" height="994" alt="7" src="https://github.com/user-attachments/assets/09e511bd-0a85-4fad-8569-29d1b434e02a" />
+<img width="1918" height="994" alt="8" src="https://github.com/user-attachments/assets/ef014190-2ba1-4ee1-9952-3f453c3279c1" />
+<img width="1919" height="992" alt="9" src="https://github.com/user-attachments/assets/239f43ff-27fd-4f8a-882b-8c7d1b6ed52d" />
 
+
+
+🤖 ANDROID
+
+
+🍎 IOS
 
 🚀 Instrucciones de Despliegue y Ejecución
 Sigue estos pasos para clonar el repositorio, instalar sus dependencias y ejecutar 
