@@ -740,13 +740,25 @@
           <!-- Historial de Pedidos Independiente por Cliente -->
           <div class="orders-history">
             <h4>Mis Pedidos Recientes ({{ tienda.pedidosUsuarioActual.length }})</h4>
+
+            <!-- Banner destacado del ID de Compra Único recién generado -->
+            <div class="order-highlight-card" *ngIf="ultimoPedidoConfirmado">
+              <div class="order-highlight-header">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <div>
+                  <strong>¡Última Compra Realizada con Éxito!</strong>
+                  <p>ID Único de Transacción: <span class="order-id-badge">{{ ultimoPedidoConfirmado.id }}</span></p>
+                </div>
+              </div>
+            </div>
+
             <p class="no-orders" *ngIf="tienda.pedidosUsuarioActual.length === 0">
               Aún no has realizado pedidos con esta cuenta. ¡Tu mascota espera su primer paquete!
             </p>
 
             <div class="order-card" *ngFor="let ped of tienda.pedidosUsuarioActual">
               <div class="order-top">
-                <strong>Pedido {{ ped.id }}</strong>
+                <strong>ID de Compra: #{{ ped.id }}</strong>
                 <span class="order-status">{{ ped.estado }}</span>
               </div>
               <div class="order-meta">

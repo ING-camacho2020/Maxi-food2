@@ -284,7 +284,7 @@ export class TiendaService {
   // Estado reactivo de la sesión, carrito, favoritos, pedidos y cupones
   usuarioActual: Usuario | null = null;
   carrito: ItemCarrito[] = [];
-  favoritosIds: number[] = [1, 4];
+  favoritosIds: number[] = [];
   pedidos: Pedido[] = [];
   cuponAplicado: string = '';
   porcentajeDescuentoCupon: number = 0;
@@ -376,7 +376,20 @@ export class TiendaService {
 
       const favStr = this.safeGet(this.STORAGE_FAV_KEY);
       if (favStr) {
-        this.favoritosIds = JSON.parse(favStr);
+        try {
+          const parsed = JSON.parse(favStr);
+          // Si contenía el mock antiguo [1, 4], se descarta para iniciar vacío
+          if (Array.isArray(parsed) && !(parsed.length === 2 && parsed.includes(1) && parsed.includes(4))) {
+            this.favoritosIds = parsed;
+          } else {
+            this.favoritosIds = [];
+            this.safeRemove(this.STORAGE_FAV_KEY);
+          }
+        } catch {
+          this.favoritosIds = [];
+        }
+      } else {
+        this.favoritosIds = [];
       }
 
       const ordersStr = this.safeGet(this.STORAGE_ORDERS_KEY);
@@ -524,6 +537,8 @@ export class TiendaService {
       telefono: '',
       proveedor: 'local'
     };
+    this.favoritosIds = [];
+    this.safeRemove(this.STORAGE_FAV_KEY);
     this.safeSet(this.STORAGE_USER_KEY, JSON.stringify(this.usuarioActual));
     return {
       ok: true,
@@ -554,6 +569,8 @@ export class TiendaService {
   cerrarSesion() {
     this.usuarioActual = null;
     this.vaciarCarrito();
+    this.favoritosIds = [];
+    this.safeRemove(this.STORAGE_FAV_KEY);
     this.safeRemove(this.STORAGE_USER_KEY);
     this.authService.cerrarSesion();
   }
@@ -713,13 +730,29 @@ export class TiendaService {
   }
 
   /**
-   * Genera un nuevo pedido con código único, lo asocia al correo del cliente activo,
-   * lo guarda en el historial y vacía el carrito.
+   * Genera un ID de compra único, formal e irrepetible para cada transacción.
+   * Formato: MXF-[AAAAMMDD]-[HASH-TIEMPO]-[ALEATORIO]
+   * Ejemplo: MXF-20261113-7J8M-4921
+   */
+  private generarIdCompraUnico(): string {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const timeBase36 = Date.now().toString(36).slice(-4).toUpperCase();
+    const randPart = Math.floor(1000 + Math.random() * 9000);
+    return `MXF-${y}${m}${d}-${timeBase36}-${randPart}`;
+  }
+
+  /**
+   * Genera un nuevo pedido con un ID de compra único e irrepetible,
+   * lo asocia al correo del cliente activo, lo guarda en el historial y vacía el carrito.
    */
   crearPedido(metodoPago: string, direccion: string): Pedido {
     const correoActual = (this.usuarioActual?.correo || 'demo@maxifood.co').trim().toLowerCase();
+    const idUnico = this.generarIdCompraUnico();
     const nuevoPedido: Pedido = {
-      id: 'MF-' + Math.floor(100000 + Math.random() * 900000),
+      id: idUnico,
       usuarioCorreo: correoActual,
       fecha: new Date().toLocaleDateString('es-CO', {
         day: '2-digit',
