@@ -17,6 +17,8 @@ Se cumplió con el objetivo central de ofrecer un flujo intuitivo para el usuari
 * **Experiencia de Compra Fluida:** Catálogo, carrito persistente y confirmación de checkout sin salir de la misma aplicación móvil.
 * **Arquitectura Híbrida Eficiente:** Desarrollada en Ionic + JavaScript, permitiendo ejecución nativa móvil en Android/iOS y distribución web.
 
+
+
 Galería de Evidencias
 
 💻 WEB

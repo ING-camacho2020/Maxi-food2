@@ -37,7 +37,8 @@ import {
   IonItem,
   IonInput,
   IonFooter,
-  ToastController
+  ToastController,
+  AlertController
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
@@ -151,12 +152,13 @@ export class CatalogoPage implements OnInit, OnDestroy {
   // Temporizador para cuenta regresiva en vivo de expiración del Token JWT (2 minutos)
   private intervaloJWT: any = null;
 
-
   public tienda = inject(TiendaService);
   public authService = inject(AuthService);
   public terceros = inject(TercerosService);
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
+  private alertCtrl = inject(AlertController);
+
   constructor() {
     // Registro de todos los íconos de Ionicons utilizados en la plantilla del catálogo y sus modales
     addIcons({
@@ -446,7 +448,8 @@ export class CatalogoPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Procesa la compra actual, registra el pedido en el historial y abre el modal de perfil para mostrarlo.
+   * Procesa la compra actual, genera un ID de compra único, muestra alerta de confirmación
+   * y abre el modal de perfil para visualizar el historial actualizado.
    */
   async confirmarPedido() {
     if (this.tienda.carrito.length === 0) return;
@@ -457,12 +460,28 @@ export class CatalogoPage implements OnInit, OnDestroy {
     );
     this.ultimoPedidoConfirmado = pedido;
     this.mostrarModalCarrito = false;
+
+    // Alerta interactiva para destacar en el video el ID de compra único generado
+    const alert = await this.alertCtrl.create({
+      header: '🎉 ¡Compra Confirmada!',
+      subHeader: `ID de Compra Único: ${pedido.id}`,
+      message: `Tu orden por $${pedido.total.toLocaleString('es-CO')} COP ha sido registrada exitosamente.\n\nMétodo de Pago: ${pedido.metodoPago}\nDirección de Entrega: ${pedido.direccion}\nEstado: ${pedido.estado}`,
+      buttons: [
+        {
+          text: 'Ver en Mis Pedidos',
+          handler: () => {
+            this.mostrarModalPerfil = true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+
     await this.mostrarToast(
-      `🎉 ¡Pedido ${pedido.id} confirmado! Total: $${pedido.total.toLocaleString('es-CO')} COP`,
+      `🎉 ¡Compra confirmada! ID Único: ${pedido.id}`,
       'success',
-      3500
+      4000
     );
-    this.mostrarModalPerfil = true;
   }
 
   /**
