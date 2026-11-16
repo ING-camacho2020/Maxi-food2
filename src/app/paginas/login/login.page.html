@@ -34,196 +34,183 @@
         </ion-segment>
 
         <!-- MODO LOGIN -->
-        <div *ngIf="modo === 'login'" class="form-section">
-          <div class="welcome-text">
-            <h2>¡Hola de nuevo! 👋</h2>
-            <p>Ingresa tus datos para consentir a tu mascota</p>
-          </div>
-
-          <ion-item lines="none" class="custom-input">
-            <ion-icon name="mail-outline" slot="start"></ion-icon>
-            <ion-input
-              label="Correo electrónico"
-              labelPlacement="floating"
-              type="email"
-              [(ngModel)]="correo"
-              placeholder="correo@ejemplo.com"
-            ></ion-input>
-          </ion-item>
-
-          <ion-item lines="none" class="custom-input">
-            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-            <ion-input
-              label="Contraseña"
-              labelPlacement="floating"
-              [type]="mostrarPassword ? 'text' : 'password'"
-              [(ngModel)]="password"
-              placeholder="••••••••"
-              (keyup.enter)="iniciarSesion()"
-            ></ion-input>
-            <ion-button
-              fill="clear"
-              slot="end"
-              color="medium"
-              (click)="mostrarPassword = !mostrarPassword"
-            >
-              <ion-icon [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+        @if (modo === 'login') {
+          <div class="form-section">
+            <div class="welcome-text">
+              <h2>¡Hola de nuevo! 👋</h2>
+              <p>Ingresa tus datos para consentir a tu mascota</p>
+            </div>
+            <ion-item lines="none" class="custom-input">
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-input
+                label="Correo electrónico"
+                labelPlacement="floating"
+                type="email"
+                [(ngModel)]="correo"
+                placeholder="correo@ejemplo.com"
+              ></ion-input>
+            </ion-item>
+            <ion-item lines="none" class="custom-input">
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-input
+                label="Contraseña"
+                labelPlacement="floating"
+                [type]="mostrarPassword ? 'text' : 'password'"
+                [(ngModel)]="password"
+                placeholder="••••••••"
+                (keyup.enter)="iniciarSesion()"
+              ></ion-input>
+              <ion-button
+                fill="clear"
+                slot="end"
+                color="medium"
+                (click)="mostrarPassword = !mostrarPassword"
+                >
+                <ion-icon [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item>
+            <ion-button expand="block" shape="round" class="primary-btn" (click)="iniciarSesion()">
+              Ingresar a la Tienda
             </ion-button>
-          </ion-item>
-
-          <ion-button expand="block" shape="round" class="primary-btn" (click)="iniciarSesion()">
-            Ingresar a la Tienda
-          </ion-button>
-
-          <!-- Autenticación Social OAuth 2.0 (Google & Facebook) -->
-          <div class="divider">
-            <span>o ingresa con redes sociales</span>
-          </div>
-
-          <div class="social-auth-container">
-            <button type="button" class="social-btn google-btn" (click)="iniciarSesionGoogle()">
-              <ion-icon name="logo-google"></ion-icon>
-              <span>Continuar con Google</span>
-            </button>
-            <button type="button" class="social-btn facebook-btn" (click)="iniciarSesionFacebook()">
-              <ion-icon name="logo-facebook"></ion-icon>
-              <span>Continuar con Facebook</span>
-            </button>
-          </div>
-
-          <div class="jwt-security-pill">
-            <ion-icon name="key-outline"></ion-icon>
-            <span>Sesión protegida con <strong>Tokens JWT (HS256)</strong></span>
-          </div>
-
-          <div class="divider">
-            <span>o prueba al instante</span>
-          </div>
-
-          <ion-button
-            expand="block"
-            shape="round"
-            fill="outline"
-            color="secondary"
-            class="demo-btn"
-            (click)="accesoDemo()"
-          >
-            <ion-icon name="sparkles-outline" slot="start"></ion-icon>
-            Entrar con Cuenta Demo (1 clic)
-          </ion-button>
-
-          <p class="switch-prompt">
-            ¿No tienes cuenta todavía?
-            <a (click)="modo = 'registro'">Regístrate gratis</a>
-          </p>
-        </div>
-
-        <!-- MODO REGISTRO -->
-        <div *ngIf="modo === 'registro'" class="form-section">
-          <div class="welcome-text">
-            <h2>Únete a la manada 🐶🐱</h2>
-            <p>Crea tu perfil y recibe un cupón del 10% (<strong>MAXI10</strong>)</p>
-          </div>
-
-          <ion-item lines="none" class="custom-input">
-            <ion-icon name="person-outline" slot="start"></ion-icon>
-            <ion-input
-              label="Tu nombre completo"
-              labelPlacement="floating"
-              type="text"
-              [(ngModel)]="nombre"
-              placeholder="Ej. Carlos Camacho"
-            ></ion-input>
-          </ion-item>
-
-          <ion-item lines="none" class="custom-input">
-            <ion-icon name="mail-outline" slot="start"></ion-icon>
-            <ion-input
-              label="Correo electrónico"
-              labelPlacement="floating"
-              type="email"
-              [(ngModel)]="correo"
-              placeholder="correo@ejemplo.com"
-            ></ion-input>
-          </ion-item>
-
-          <ion-item lines="none" class="custom-input">
-            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-            <ion-input
-              label="Crea una contraseña"
-              labelPlacement="floating"
-              [type]="mostrarPassword ? 'text' : 'password'"
-              [(ngModel)]="password"
-              placeholder="Mínimo 4 caracteres"
-            ></ion-input>
-            <ion-button
-              fill="clear"
-              slot="end"
-              color="medium"
-              (click)="mostrarPassword = !mostrarPassword"
-            >
-              <ion-icon [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
-            </ion-button>
-          </ion-item>
-
-          <ion-item lines="none" class="custom-input">
-            <ion-icon name="heart-outline" slot="start"></ion-icon>
-            <ion-input
-              label="Nombre de tu mascota"
-              labelPlacement="floating"
-              type="text"
-              [(ngModel)]="nombreMascota"
-              placeholder="Ej. Max, Luna, Michi..."
-            ></ion-input>
-          </ion-item>
-
-          <div class="pet-type-selector">
-            <span class="pet-label">¿Qué mascota tienes?</span>
-            <div class="pet-pills">
-              <button
-                type="button"
-                [class.active]="tipoMascota === 'perro'"
-                (click)="tipoMascota = 'perro'"
-              >
-                🐕 Perro
+            <!-- Autenticación Social OAuth 2.0 (Google & Facebook) -->
+            <div class="divider">
+              <span>o ingresa con redes sociales</span>
+            </div>
+            <div class="social-auth-container">
+              <button type="button" class="social-btn google-btn" (click)="iniciarSesionGoogle()">
+                <ion-icon name="logo-google"></ion-icon>
+                <span>Continuar con Google</span>
               </button>
-              <button
-                type="button"
-                [class.active]="tipoMascota === 'gato'"
-                (click)="tipoMascota = 'gato'"
-              >
-                🐈 Gato
-              </button>
-              <button
-                type="button"
-                [class.active]="tipoMascota === 'ambos'"
-                (click)="tipoMascota = 'ambos'"
-              >
-                🐾 Ambos
+              <button type="button" class="social-btn facebook-btn" (click)="iniciarSesionFacebook()">
+                <ion-icon name="logo-facebook"></ion-icon>
+                <span>Continuar con Facebook</span>
               </button>
             </div>
+            <div class="jwt-security-pill">
+              <ion-icon name="key-outline"></ion-icon>
+              <span>Sesión protegida con <strong>Tokens JWT (HS256)</strong></span>
+            </div>
+            <div class="divider">
+              <span>o prueba al instante</span>
+            </div>
+            <ion-button
+              expand="block"
+              shape="round"
+              fill="outline"
+              color="secondary"
+              class="demo-btn"
+              (click)="accesoDemo()"
+              >
+              <ion-icon name="sparkles-outline" slot="start"></ion-icon>
+              Entrar con Cuenta Demo (1 clic)
+            </ion-button>
+            <p class="switch-prompt">
+              ¿No tienes cuenta todavía?
+              <a (click)="modo = 'registro'">Regístrate gratis</a>
+            </p>
           </div>
+        }
 
-          <ion-item lines="none" class="custom-input">
-            <ion-icon name="location-outline" slot="start"></ion-icon>
-            <ion-input
-              label="Dirección de entrega (opcional)"
-              labelPlacement="floating"
-              type="text"
-              [(ngModel)]="direccion"
-              placeholder="Ej. Calle 85 # 12-40"
-            ></ion-input>
-          </ion-item>
-
-          <ion-button expand="block" shape="round" class="primary-btn" (click)="registrarCuenta()">
-            Crear Cuenta y Explorar
-          </ion-button>
-
-          <p class="switch-prompt">
-            ¿Ya tienes una cuenta?
-            <a (click)="modo = 'login'">Inicia sesión aquí</a>
-          </p>
-        </div>
+        <!-- MODO REGISTRO -->
+        @if (modo === 'registro') {
+          <div class="form-section">
+            <div class="welcome-text">
+              <h2>Únete a la manada 🐶🐱</h2>
+              <p>Crea tu perfil y recibe un cupón del 10% (<strong>MAXI10</strong>)</p>
+            </div>
+            <ion-item lines="none" class="custom-input">
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-input
+                label="Tu nombre completo"
+                labelPlacement="floating"
+                type="text"
+                [(ngModel)]="nombre"
+                placeholder="Ej. Carlos Camacho"
+              ></ion-input>
+            </ion-item>
+            <ion-item lines="none" class="custom-input">
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-input
+                label="Correo electrónico"
+                labelPlacement="floating"
+                type="email"
+                [(ngModel)]="correo"
+                placeholder="correo@ejemplo.com"
+              ></ion-input>
+            </ion-item>
+            <ion-item lines="none" class="custom-input">
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-input
+                label="Crea una contraseña"
+                labelPlacement="floating"
+                [type]="mostrarPassword ? 'text' : 'password'"
+                [(ngModel)]="password"
+                placeholder="Mínimo 4 caracteres"
+              ></ion-input>
+              <ion-button
+                fill="clear"
+                slot="end"
+                color="medium"
+                (click)="mostrarPassword = !mostrarPassword"
+                >
+                <ion-icon [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item>
+            <ion-item lines="none" class="custom-input">
+              <ion-icon name="heart-outline" slot="start"></ion-icon>
+              <ion-input
+                label="Nombre de tu mascota"
+                labelPlacement="floating"
+                type="text"
+                [(ngModel)]="nombreMascota"
+                placeholder="Ej. Max, Luna, Michi..."
+              ></ion-input>
+            </ion-item>
+            <div class="pet-type-selector">
+              <span class="pet-label">¿Qué mascota tienes?</span>
+              <div class="pet-pills">
+                <button
+                  type="button"
+                  [class.active]="tipoMascota === 'perro'"
+                  (click)="tipoMascota = 'perro'"
+                  >
+                  🐕 Perro
+                </button>
+                <button
+                  type="button"
+                  [class.active]="tipoMascota === 'gato'"
+                  (click)="tipoMascota = 'gato'"
+                  >
+                  🐈 Gato
+                </button>
+                <button
+                  type="button"
+                  [class.active]="tipoMascota === 'ambos'"
+                  (click)="tipoMascota = 'ambos'"
+                  >
+                  🐾 Ambos
+                </button>
+              </div>
+            </div>
+            <ion-item lines="none" class="custom-input">
+              <ion-icon name="location-outline" slot="start"></ion-icon>
+              <ion-input
+                label="Dirección de entrega (opcional)"
+                labelPlacement="floating"
+                type="text"
+                [(ngModel)]="direccion"
+                placeholder="Ej. Calle 85 # 12-40"
+              ></ion-input>
+            </ion-item>
+            <ion-button expand="block" shape="round" class="primary-btn" (click)="registrarCuenta()">
+              Crear Cuenta y Explorar
+            </ion-button>
+            <p class="switch-prompt">
+              ¿Ya tienes una cuenta?
+              <a (click)="modo = 'login'">Inicia sesión aquí</a>
+            </p>
+          </div>
+        }
       </ion-card-content>
     </ion-card>
   </div>

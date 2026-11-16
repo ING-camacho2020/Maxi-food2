@@ -164,7 +164,7 @@ export class AuthService {
    */
   public generarToken(datosUsuario: Partial<JWTPayload>): string {
     const ahoraSeg = Math.floor(Date.now() / 1000);
-    const expiracionSeg = ahoraSeg + (2 * 60); // 2 minutos de validez (120 segundos)
+    const expiracionSeg = ahoraSeg + (60 * 60); // 2 minutos de validez (120 segundos)
 
     const header = {
       alg: 'HS256',

@@ -4,8 +4,8 @@
  * y registro de nuevos usuarios junto con la información de su mascota.
  */
 
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject  } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -48,7 +48,6 @@ import { TiendaService } from '../../services/tienda.service';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     IonContent,
     IonCard,
@@ -61,7 +60,7 @@ import { TiendaService } from '../../services/tienda.service';
     IonSegmentButton,
     IonLabel,
     IonChip
-  ]
+]
 })
 export class LoginPage {
   // Controla qué pestaña del formulario se muestra: 'login' (Iniciar Sesión) o 'registro' (Crear Cuenta)
@@ -81,11 +80,11 @@ export class LoginPage {
   direccion: string = '';
   telefono: string = '';
 
-  constructor(
-    private router: Router,
-    private tiendaService: TiendaService,
-    private toastCtrl: ToastController
-  ) {
+  private router = inject(Router);
+  private tiendaService = inject(TiendaService);
+  private toastCtrl = inject(ToastController);
+
+  constructor( ) {
     // Registro explícito de los íconos de Ionicons utilizados en la plantilla
     addIcons({
       mailOutline,

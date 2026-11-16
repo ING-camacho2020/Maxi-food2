@@ -8,7 +8,7 @@
  * - Lista de favoritos e historial de pedidos con persistencia en `localStorage`.
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AuthService, JWTPayload } from './auth.service';
 
 /**
@@ -292,7 +292,9 @@ export class TiendaService {
   // Memoria de respaldo cuando localStorage no está disponible
   private memoryFallback = new Map<string, string>();
 
-  constructor(public authService: AuthService) {
+    public authService = inject(AuthService);
+
+  constructor() {
     // Al instanciar el servicio se recupera el estado previo guardado en el navegador
     this.cargarEstado();
   }

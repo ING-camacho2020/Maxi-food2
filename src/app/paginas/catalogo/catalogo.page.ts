@@ -9,7 +9,7 @@
  * 5. El modal de perfil de usuario/mascota e historial de pedidos.
  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -151,13 +151,13 @@ export class CatalogoPage implements OnInit, OnDestroy {
   // Temporizador para cuenta regresiva en vivo de expiración del Token JWT (2 minutos)
   private intervaloJWT: any = null;
 
-  constructor(
-    public tienda: TiendaService,
-    public authService: AuthService,
-    public terceros: TercerosService,
-    private router: Router,
-    private toastCtrl: ToastController
-  ) {
+
+  public tienda = inject(TiendaService);
+  public authService = inject(AuthService);
+  public terceros = inject(TercerosService);
+  private router = inject(Router);
+  private toastCtrl = inject(ToastController);
+  constructor() {
     // Registro de todos los íconos de Ionicons utilizados en la plantilla del catálogo y sus modales
     addIcons({
       cartOutline,
