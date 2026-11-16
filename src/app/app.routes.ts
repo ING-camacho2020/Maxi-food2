@@ -6,7 +6,7 @@
  */
 
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
+import { authGuard, loginGuard  } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -18,6 +18,7 @@ export const routes: Routes = [
   {
     // Pantalla de autenticación y registro de usuarios/mascotas (con soporte JWT y OAuth)
     path: 'login',
+    canActivate: [loginGuard],
     loadComponent: () => import('./paginas/login/login.page').then((m) => m.LoginPage),
   },
   {

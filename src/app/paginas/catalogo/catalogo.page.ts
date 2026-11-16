@@ -206,17 +206,16 @@ export class CatalogoPage implements OnInit, OnDestroy {
     await this.cargarClimaEnTiempoReal();
 
     // Actualiza la cuenta regresiva del token cada segundo y comprueba si expiró
-    this.intervaloJWT = setInterval(() => {
+     this.intervaloJWT = setInterval(() => {
       this.actualizarAuditoriaJWT();
       if (!this.authService.estaAutenticado()) {
         clearInterval(this.intervaloJWT);
         this.intervaloJWT = null;
-        this.mostrarToast('⏳ Tu Token JWT (2 min) ha expirado. Por favor inicia sesión nuevamente.', 'warning', 4000);
-        this.router.navigate(['/login']);
+        this.mostrarToast('⏳ Tu Token JWT ha expirado. Por favor inicia sesión nuevamente.', 'warning', 4000);
+        this.router.navigateByUrl('/login', { replaceUrl: true });
       }
     }, 1000);
   }
-
   /**
    * Limpia el temporizador al salir de la pantalla.
    */
@@ -486,15 +485,28 @@ export class CatalogoPage implements OnInit, OnDestroy {
   /**
    * Cierra todos los modales abiertos, finaliza la sesión en `TiendaService` y redirige a `/login`.
    */
-  async cerrarSesion() {
+    async cerrarSesion() {
     this.mostrarModalPerfil = false;
     this.mostrarModalCarrito = false;
     this.productoDetalle = null;
-    this.tienda.cerrarSesion();
-    await this.mostrarToast('Has cerrado sesión correctamente', 'medium');
-    this.router.navigate(['/login']);
-  }
 
+    // 1. Detiene el temporizador para que no dispare el aviso de "token expirado"
+    if (this.intervaloJWT) {
+      clearInterval(this.intervaloJWT);
+      this.intervaloJWT = null;
+    }
+
+    // 2. Limpieza del token JWT (Preferences + caché en memoria)
+    await this.authService.cerrarSesion();
+
+    // 3. Limpieza del estado de la tienda (usuario actual)
+    this.tienda.cerrarSesion();
+
+    await this.mostrarToast('Has cerrado sesión correctamente', 'medium');
+
+    // 4. replaceUrl evita volver a una vista privada con el botón "atrás"
+    this.router.navigateByUrl('/login', { replaceUrl: true });
+  }
   /**
    * Calcula el porcentaje de avance (0% a 100%) hacia la meta de envío gratis ($120.000 COP).
    */

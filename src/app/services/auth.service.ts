@@ -11,6 +11,7 @@
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Preferences } from '@capacitor/preferences';
 
 /**
  * Estructura del Payload estándar de un Token JWT en Maxi-Food.
@@ -78,52 +79,32 @@ export class AuthService {
    * Obtiene de forma segura un valor desde localStorage o la memoria de respaldo.
    */
   private getStorageItem(key: string): string | null {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
-        return window.localStorage.getItem(key);
-      }
-      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.getItem === 'function') {
-        return localStorage.getItem(key);
-      }
-    } catch {
-      // Ignora excepciones si localStorage está deshabilitado
+      return this.memoryFallback.get(key) ?? null;
+      
     }
-    return this.memoryFallback.get(key) ?? null;
-  }
+  
+  
 
   /**
    * Guarda de forma segura un valor en localStorage y en la memoria de respaldo.
    */
   private setStorageItem(key: string, value: string): void {
     this.memoryFallback.set(key, value);
-    try {
-      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.setItem === 'function') {
-        window.localStorage.setItem(key, value);
-        return;
-      }
-      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.setItem === 'function') {
-        localStorage.setItem(key, value);
-      }
-    } catch {
+    Preferences.set({ key, value }).catch(e => console.error('Preferences.set', e));
+  
       // Ignora excepciones si localStorage no está disponible
     }
-  }
+  
 
   /**
    * Elimina de forma segura un valor de localStorage y de la memoria de respaldo.
    */
-  private removeStorageItem(key: string): void {
+  private async removeStorageItem(key: string): Promise<void> {
     this.memoryFallback.delete(key);
     try {
-      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.removeItem === 'function') {
-        window.localStorage.removeItem(key);
-        return;
-      }
-      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.setItem === 'function') {
-        localStorage.removeItem(key);
-      }
-    } catch {
-      // Ignora excepciones si localStorage no está disponible
+      await Preferences.remove({ key });
+    } catch (e) {
+      console.error('Preferences.remove', e);
     }
   }
 
@@ -305,6 +286,14 @@ export class AuthService {
     this.userClaimsSubject.next(this.obtenerPayload());
   }
 
+  public async cargarSesion(): Promise<void> {
+    for (const key of [this.STORAGE_JWT_KEY, this.STORAGE_USERS_KEY]) {
+      const { value } = await Preferences.get({ key });
+      if (value !== null) this.memoryFallback.set(key, value);
+    }
+    this.revisarEstadoToken();
+  }
+
   // =========================================================================
   // MÉTODOS DE NEGOCIO: LOGIN LOCAL, REGISTRO Y OAUTH SOCIAL
   // =========================================================================
@@ -456,10 +445,10 @@ export class AuthService {
   /**
    * Cierra la sesión activa: revoca y elimina el token JWT de localStorage.
    */
-  public cerrarSesion(): void {
-    this.removeStorageItem(this.STORAGE_JWT_KEY);
+   public async cerrarSesion(): Promise<void> {
     this.userClaimsSubject.next(null);
     this.authStateSubject.next(false);
+    await this.removeStorageItem(this.STORAGE_JWT_KEY);
   }
 
   /**
