@@ -87,5 +87,11 @@ Paso a Paso
 * Bash
 * ionic build
 
+## Video explicativo
+
+[![Video explicativo de Maxi-Food](https://img.youtube.com/vi/p2ePpo7Z7iw/0.jpg)](https://youtu.be/p2ePpo7Z7iw)
+
+Enlace directo: https://youtu.be/p2ePpo7Z7iw
+
 
 
